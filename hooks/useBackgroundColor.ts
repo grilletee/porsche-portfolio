@@ -4,17 +4,13 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { gsap } from "gsap";
 import { useScrollStore } from "@/store/useScrollStore";
+import { BG_TRANSITION } from "@/lib/scrollPhases";
 
-/**
- * Easing sine.inOut: curva sinusoidal progresiva, sin aceleración brusca.
- * Adecuado para transiciones de color de fondo que deben percibirse
- * como un cambio gradual, no como un flash.
- */
+/** Easing sine.inOut: curva progresiva, sin aceleración brusca. */
 const easeFn = gsap.parseEase("sine.inOut");
 
 // ---------------------------------------------------------------------------
-// Colores y vector reutilizables (se mutan en cada frame para
-// evitar allocs de GC dentro del render loop de R3F).
+// Colores reutilizables
 // ---------------------------------------------------------------------------
 const _colorDark = new THREE.Color("#050505");
 const _colorLight = new THREE.Color("#e8e8e8");
@@ -30,18 +26,18 @@ export function useBackgroundColor() {
   useFrame(() => {
     const p = scrollProgress;
 
-    // Transición de fondo suave entre scroll 0.35 y 0.75:
-    // Subida: #050505 → #e8e8e8 (0.35 → 0.55)
-    // Bajada: #e8e8e8 → #050505 (0.55 → 0.75)
-    // Fuera de ese rango: #050505 fijo.
-    if (p < 0.35) {
+    if (p < BG_TRANSITION.start) {
       scene.background = _colorDark;
-    } else if (p < 0.55) {
-      const t = easeFn((p - 0.35) / 0.2);
+    } else if (p < BG_TRANSITION.peak) {
+      const t = easeFn(
+        (p - BG_TRANSITION.start) / (BG_TRANSITION.peak - BG_TRANSITION.start),
+      );
       _colorCurrent.copy(_colorDark).lerp(_colorLight, t);
       scene.background = _colorCurrent;
-    } else if (p < 0.75) {
-      const t = easeFn((p - 0.55) / 0.2);
+    } else if (p < BG_TRANSITION.end) {
+      const t = easeFn(
+        (p - BG_TRANSITION.peak) / (BG_TRANSITION.end - BG_TRANSITION.peak),
+      );
       _colorCurrent.copy(_colorLight).lerp(_colorDark, t);
       scene.background = _colorCurrent;
     } else {
