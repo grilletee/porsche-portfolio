@@ -19,13 +19,13 @@ export default function Home() {
       {/* Canvas 3D: position fixed, cubre toda la pantalla (ver Scene.tsx). */}
       <Scene />
 
-      {/* Contenido scrollable: genera 500vh de recorrido para verificar
-          que Lenis + ScrollTrigger + el store de progreso funcionan.
-          pointer-events: none para que OrbitControls (debug) siga
-          recibiendo eventos de ratón a través de esta capa. */}
+      {/* Contenido scrollable: 500vh de recorrido para la coreografía.
+          pointer-events: none para que no bloquee los eventos — en
+          el Sprint 4 se activará cuando añadamos overlays de contenido. */}
       <div style={{ position: "relative", zIndex: 1, pointerEvents: "none" }}>
         <div style={{ height: "500vh" }}>
-          {/* Bloques de debug cada 100vh — se quitan en el Sprint 3. */}
+          {/* Bloques de debug cada 100vh — referencia visual, se
+              quitan cuando el contenido esté listo. */}
           {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
