@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useLenisScroll } from "@/hooks/useLenisScroll";
 import { useScrollStore } from "@/store/useScrollStore";
 import { useExplodedView } from "@/hooks/useExplodedView";
+import ContentOverlay from "@/components/ui/ContentOverlay";
 
 // El Canvas de R3F usa APIs de navegador (WebGL) que no existen en el
 // servidor. Cargarlo con ssr:false evita errores de hidratación.
@@ -70,6 +71,10 @@ export default function Home() {
       {/* Debug overlay: valores en tiempo real.
           Se quita cuando se confirme que todo funciona. */}
       <DebugPanel />
+
+      {/* Sprint 5: overlays de texto sincronizados con las fases
+          de cámara (usa scrollPhases.ts como fuente única). */}
+      <ContentOverlay />
     </main>
   );
 }
