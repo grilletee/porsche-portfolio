@@ -12,4 +12,4 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Sprint 1: sin scroll real todavía. Se activará en Sprint 2 con Lenis. */
+/* Sprint 2: scroll con Lenis + ScrollTrigger + zustand (ver hooks/useLenisScroll.ts). */
