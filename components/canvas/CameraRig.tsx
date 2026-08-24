@@ -1,13 +1,15 @@
 "use client";
 
 import { useCameraAnimation } from "@/hooks/useCameraAnimation";
+import { useBackgroundColor } from "@/hooks/useBackgroundColor";
 
 /**
- * Componente vacío que monta el hook de animación de cámara dentro
- * del Canvas de R3F. Necesita estar dentro del árbol del Canvas
- * porque useCameraAnimation usa useThree() y useFrame().
+ * Componente que monta los hooks de animación dentro del Canvas.
+ * - useCameraAnimation: coreografía de cámara con easing expo.inOut.
+ * - useBackgroundColor: transición suave de fondo con sine.inOut.
  */
 export default function CameraRig() {
   useCameraAnimation();
+  useBackgroundColor();
   return null;
 }
