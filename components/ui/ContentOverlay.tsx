@@ -346,6 +346,14 @@ export default function ContentOverlay() {
         if (ctaWrapperRef.current) {
           ctaWrapperRef.current.style.opacity = pastTrack ? "0" : "1";
         }
+        // Crítico (Sprint 10A): el botón de mailto del CTA fijo quedaba
+        // invisible (opacity 0) pero seguía capturando clics sobre el
+        // footer (p. ej. el botón de GitHub, que queda justo debajo en
+        // pantalla). Al soltar el track se desactivan sus pointer-events;
+        // al volver al recorrido 3D se reactivan.
+        if (ctaButtonRef.current) {
+          ctaButtonRef.current.style.pointerEvents = pastTrack ? "none" : "auto";
+        }
       }
     };
     applyTrackFade();
