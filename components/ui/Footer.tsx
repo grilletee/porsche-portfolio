@@ -36,6 +36,18 @@ const LINK_STYLE: React.CSSProperties = {
   cursor: "pointer",
 };
 
+// Bloque CTA: todo comparte el mismo eje vertical (flex column centrado)
+// y el mismo max-width, para que título, texto y botón estén centrados
+// como conjunto (Sprint 10B).
+const CTA_BLOCK_STYLE: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 16,
+  maxWidth: 640,
+  margin: "0 auto",
+};
+
 const FOOTER_NOTE_STYLE: React.CSSProperties = {
   fontFamily: "var(--font-jetbrains-mono), monospace",
   fontSize: "0.65rem",
@@ -49,12 +61,14 @@ export default function Footer() {
   return (
     <footer style={FOOTER_STYLE}>
       <Reveal>
-        <h2 style={TITLE_STYLE}>¿Hablamos?</h2>
-        <p style={{ ...BODY_STYLE, marginTop: 12 }}>
-          Trabajando en backend, IoT e IA aplicada — escríbeme.
-        </p>
-        <div style={{ marginTop: 24 }}>
-          <TechButton href="mailto:grillete07@gmail.com">Contrátame</TechButton>
+        <div style={CTA_BLOCK_STYLE}>
+          <h2 style={TITLE_STYLE}>¿Hablamos?</h2>
+          <p style={BODY_STYLE}>
+            Trabajando en backend, IoT e IA aplicada — escríbeme.
+          </p>
+          <div>
+            <TechButton href="mailto:grillete07@gmail.com">Contrátame</TechButton>
+          </div>
         </div>
       </Reveal>
 
