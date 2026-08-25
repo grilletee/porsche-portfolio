@@ -8,7 +8,10 @@ html,
 body {
   background-color: #050505;
   color: #ffffff;
-  overflow-x: hidden;
+  /* overflow-x: clip (no hidden): oculta el desborde horizontal del
+     Canvas 100vw sin crear un scroll container, que rompería el
+     position: sticky del recorrido 3D (Sprint 8). */
+  overflow-x: clip;
   font-family: system-ui, -apple-system, sans-serif;
 }
 
