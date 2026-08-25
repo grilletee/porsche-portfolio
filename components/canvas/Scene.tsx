@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, PerformanceMonitor } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import CameraRig from "./CameraRig";
@@ -10,6 +10,7 @@ import PorscheExploded from "./PorscheExploded";
 export default function Scene() {
   return (
     <Canvas
+      dpr={[1, 1.5]}
       camera={{ position: [5, 2.2, 6], fov: 40 }}
       style={{
         position: "fixed",
@@ -27,12 +28,14 @@ export default function Scene() {
       {/* Color de fondo inicial (mutado dinámicamente por useBackgroundColor). */}
       <color attach="background" args={["#050505"]} />
 
-      {/* Environment map de estudio: solo aporta reflejos metálicos
-          (background=false), no reemplaza el fondo negro. */}
+      {/* Environment map de studio a baja resolución: solo aporta
+          reflejos metálicos (background=false). resolution=64 reduce
+          el coste sin perder calidad perceptible en los reflejos. */}
       <Environment
         preset="studio"
         background={false}
         environmentIntensity={0.3}
+        resolution={64}
       />
 
       <Lighting />
@@ -53,6 +56,12 @@ export default function Scene() {
           intensity={0.15}
         />
       </EffectComposer>
+
+      {/* Monitor de rendimiento: reduce el dpr si el frame rate cae
+          por debajo del umbral (por defecto ~30fps).
+          En drei reciente, sin callbacks propios, el componente
+          llama automáticamente a gl.setDpr() para adaptarse. */}
+      <PerformanceMonitor />
     </Canvas>
   );
 }
