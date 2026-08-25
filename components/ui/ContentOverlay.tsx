@@ -158,7 +158,8 @@ const WRAPPER_STYLE: React.CSSProperties = {
 };
 
 const LABEL_STYLE: React.CSSProperties = {
-  margin: 0, fontFamily: "system-ui", fontSize: "0.75rem", fontWeight: 500,
+  margin: 0, fontFamily: "var(--font-jetbrains-mono), monospace",
+  fontSize: "0.75rem", fontWeight: 500,
   letterSpacing: "0.15em", textTransform: "uppercase", color: "#ff3b30",
   opacity: 0,
 };
@@ -187,6 +188,7 @@ const TAGS_ROW_STYLE: React.CSSProperties = {
 };
 
 const TAG_STYLE: React.CSSProperties = {
+  fontFamily: "var(--font-jetbrains-mono), monospace",
   border: "1px solid rgba(255, 59, 48, 0.6)", color: "rgba(255, 59, 48, 0.6)",
   fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.05em",
   textTransform: "uppercase", padding: "4px 10px", borderRadius: 2,
