@@ -25,6 +25,13 @@ export default function Lighting() {
 
       {/* Fill sutil desde el lado opuesto a la key. */}
       <directionalLight position={[-4, 2, 3]} intensity={0.3} color="#ffffff" />
+
+      {/* Sprint 7B: luces de relleno bajas para aportar highlights
+          en reflejos metálicos desde ángulos que key/rim no cubren.
+          Especialmente útiles para las piezas separadas en la vista
+          explosionada, que quedan fuera del cono de la key light. */}
+      <directionalLight position={[-6, 1.5, 5]} intensity={0.4} color="#ffffff" />
+      <directionalLight position={[6, 1.5, -5]} intensity={0.4} color="#ffffff" />
     </>
   );
 }
