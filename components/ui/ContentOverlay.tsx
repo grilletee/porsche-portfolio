@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
+import { useEffect, useRef } from "react";
 import { useScrollStore } from "@/store/useScrollStore";
-import { getActiveCameraPhase } from "@/lib/scrollPhases";
+import { CAMERA_PHASES } from "@/lib/scrollPhases";
+import { getTextRevealStateStaggered } from "@/lib/textReveal";
+import type { ScrollPhase } from "@/lib/scrollPhases";
 
 // ---------------------------------------------------------------------------
 // Contenido por fase.
-// La fase "transicion" no tiene contenido propio (respiro visual).
+// "transicion" no tiene bloque (es un respiro visual).
 // ---------------------------------------------------------------------------
 interface PhaseContent {
   label: string;
@@ -16,37 +17,102 @@ interface PhaseContent {
   side: "left" | "right";
 }
 
-const PHASE_CONTENT: Record<string, PhaseContent> = {
+type PhaseKey = "hero" | "backend" | "frontend" | "explode";
+
+const BLOCKS: Record<
+  PhaseKey,
+  { content: PhaseContent; phase: ScrollPhase }
+> = {
   hero: {
-    label: "01 — HERO",
-    title: "Guillermo",
-    body: "Full Stack Developer",
-    side: "left",
+    content: {
+      label: "01 — HERO",
+      title: "Guillermo",
+      body: "Full Stack Developer",
+      side: "left",
+    },
+    phase: CAMERA_PHASES.hero,
   },
   backend: {
-    label: "02 — BACKEND",
-    title: "Arquitectura y Microservicios",
-    body: "Desarrollo de CRM con Java, Spring Boot, Spring Security (JWT) y bases de datos relacionales en PostgreSQL.",
-    side: "right",
+    content: {
+      label: "02 — BACKEND",
+      title: "Arquitectura y Microservicios",
+      body: "Desarrollo de CRM con Java, Spring Boot, Spring Security (JWT) y bases de datos relacionales en PostgreSQL.",
+      side: "right",
+    },
+    phase: CAMERA_PHASES.backend,
   },
   frontend: {
-    label: "03 — FRONTEND",
-    title: "Ecosistema UI",
-    body: "Construcción de interfaces reactivas con Angular usando Signals, React y Tailwind CSS.",
-    side: "left",
+    content: {
+      label: "03 — FRONTEND",
+      title: "Ecosistema UI",
+      body: "Construcción de interfaces reactivas con Angular usando Signals, React y Tailwind CSS.",
+      side: "left",
+    },
+    phase: CAMERA_PHASES.frontend,
   },
   explode: {
-    label: "04 — HARDWARE",
-    title: "Ingeniería Inteligente",
-    body: "Top 4 Nacional Eco-Digithon. Integración de microcontroladores Arduino, sensores telemétricos, MQTT y Node.js.",
-    side: "right",
+    content: {
+      label: "04 — HARDWARE",
+      title: "Ingeniería Inteligente",
+      body: "Top 4 Nacional Eco-Digithon. Integración de microcontroladores Arduino, sensores telemétricos, MQTT y Node.js.",
+      side: "right",
+    },
+    phase: CAMERA_PHASES.explode,
   },
 };
 
+const BLOCK_KEYS = Object.keys(BLOCKS) as PhaseKey[];
+
 // ---------------------------------------------------------------------------
-// Estilos en constantes para mantener el JSX limpio.
+// Stagger offsets (en unidades de scrollProgress) entre sub-elementos.
+// label primero, acento, título y cuerpo en cascada de ~0.08s cada uno.
 // ---------------------------------------------------------------------------
-const CONTAINER_STYLE: React.CSSProperties = {
+const STAGGER_OFFSETS = {
+  label: 0,
+  accent: 0.003,
+  title: 0.006,
+  body: 0.009,
+};
+
+// ---------------------------------------------------------------------------
+// Helper: aplica un RevealState directamente al DOM de un elemento.
+// ---------------------------------------------------------------------------
+function applyReveal(el: HTMLElement | null, opacity: number, translateY: number) {
+  if (!el) return;
+  el.style.opacity = String(opacity);
+  el.style.transform = `translateY(${translateY}px)`;
+}
+
+// ---------------------------------------------------------------------------
+// Helper: actualiza los 4 sub-elementos de un bloque desde un contenedor.
+// ---------------------------------------------------------------------------
+function updateBlock(
+  container: HTMLDivElement | null,
+  scrollProgress: number,
+  phase: ScrollPhase,
+) {
+  if (!container) return;
+
+  const label = container.querySelector('[data-el="label"]') as HTMLElement | null;
+  const accent = container.querySelector('[data-el="accent"]') as HTMLElement | null;
+  const title = container.querySelector('[data-el="title"]') as HTMLElement | null;
+  const body = container.querySelector('[data-el="body"]') as HTMLElement | null;
+
+  const sLabel = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.label);
+  const sAccent = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.accent);
+  const sTitle = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.title);
+  const sBody = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.body);
+
+  applyReveal(label, sLabel.opacity, sLabel.translateY);
+  applyReveal(accent, sAccent.opacity, sAccent.translateY);
+  applyReveal(title, sTitle.opacity, sTitle.translateY);
+  applyReveal(body, sBody.opacity, sBody.translateY);
+}
+
+// ---------------------------------------------------------------------------
+// Estilos
+// ---------------------------------------------------------------------------
+const OVERLAY_STYLE: React.CSSProperties = {
   position: "fixed",
   top: 0,
   left: 0,
@@ -54,6 +120,12 @@ const CONTAINER_STYLE: React.CSSProperties = {
   height: "100vh",
   zIndex: 10,
   pointerEvents: "none",
+};
+
+const BLOCK_CONTAINER_STYLE: React.CSSProperties = {
+  position: "absolute",
+  top: 0,
+  height: "100vh",
   display: "flex",
   alignItems: "center",
   padding: "0 8vw",
@@ -72,7 +144,7 @@ const LABEL_STYLE: React.CSSProperties = {
   letterSpacing: "0.15em",
   textTransform: "uppercase",
   color: "#ff3b30",
-  opacity: 0, // GSAP anima a 1
+  opacity: 0,
 };
 
 const ACCENT_LINE_STYLE: React.CSSProperties = {
@@ -112,140 +184,92 @@ const BODY_STYLE: React.CSSProperties = {
 // Componente
 // ---------------------------------------------------------------------------
 export default function ContentOverlay() {
-  const scrollProgress = useScrollStore((s) => s.scrollProgress);
-  const phase = getActiveCameraPhase(scrollProgress);
+  // Refs a los contenedores de cada bloque.
+  const heroRef = useRef<HTMLDivElement>(null!);
+  const backendRef = useRef<HTMLDivElement>(null!);
+  const frontendRef = useRef<HTMLDivElement>(null!);
+  const explodeRef = useRef<HTMLDivElement>(null!);
 
-  const [activePhase, setActivePhase] = useState(phase.name);
-  const prevPhaseRef = useRef(phase.name);
-
-  const labelRef = useRef<HTMLParagraphElement>(null);
-  const accentRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const bodyRef = useRef<HTMLParagraphElement>(null);
-
-  const content = PHASE_CONTENT[activePhase] ?? null;
+  const blockRefs: Record<PhaseKey, React.RefObject<HTMLDivElement>> = {
+    hero: heroRef,
+    backend: backendRef,
+    frontend: frontendRef,
+    explode: explodeRef,
+  };
 
   // ------------------------------------------------------------------
-  // Efecto: animar salida y entrada al cambiar de fase.
+  // Suscripción continua al store: en cada cambio de scrollProgress,
+  // recalcula el estado de revelado de los 4 bloques y lo aplica
+  // directamente al DOM (sin pasar por setState de React).
   // ------------------------------------------------------------------
   useEffect(() => {
-    const prev = prevPhaseRef.current;
-    const next = phase.name;
+    const unsub = useScrollStore.subscribe((state) => {
+      const p = state.scrollProgress;
+      for (const key of BLOCK_KEYS) {
+        updateBlock(blockRefs[key].current, p, BLOCKS[key].phase);
+      }
+    });
 
-    if (prev === next) return;
-    prevPhaseRef.current = next;
-
-    console.log(`[ContentOverlay] fase: ${prev} → ${next}`);
-
-    // Fase sin contenido → ocultar inmediatamente.
-    if (!PHASE_CONTENT[next]) {
-      setActivePhase(next);
-      gsap.killTweensOf([
-        labelRef.current,
-        accentRef.current,
-        titleRef.current,
-        bodyRef.current,
-      ]);
-      return;
+    // También calcular una vez al montar (antes del primer evento de scroll).
+    const p = useScrollStore.getState().scrollProgress;
+    for (const key of BLOCK_KEYS) {
+      updateBlock(blockRefs[key].current, p, BLOCKS[key].phase);
     }
 
-    const tl = gsap.timeline();
+    return unsub;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    // 1) Fade out rápido si la fase anterior tenía contenido.
-    if (PHASE_CONTENT[prev]) {
-      tl.to(
-        [labelRef.current, accentRef.current, titleRef.current, bodyRef.current],
-        {
-          opacity: 0,
-          duration: 0.15,
-          ease: "power2.in",
-          onComplete: () => setActivePhase(next),
-        },
-        0,
-      );
-    } else {
-      setActivePhase(next);
-    }
-
-    // 2) Entrada en cascada: label → accent → title → body.
-    //    Cada elemento opacity 0→1 + y:20→0, ease expo.out.
-    //    Stagger de ~0.08s entre cada elemento (solapan por 0.42s
-    //    sobre una duración de 0.5s).
-    tl.fromTo(
-      labelRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" },
-      0.1,
-    );
-
-    tl.fromTo(
-      accentRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" },
-      0.18,
-    );
-
-    tl.fromTo(
-      titleRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" },
-      0.26,
-    );
-
-    tl.fromTo(
-      bodyRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" },
-      0.34,
-    );
-
-    return () => {
-      tl.kill();
-    };
-  }, [phase.name]);
-
-  if (!content) return null;
-
-  const isLeft = content.side === "left";
-
+  // ------------------------------------------------------------------
+  // Render: los 4 bloques están siempre en el DOM.
+  // ------------------------------------------------------------------
   return (
-    <div
-      style={{
-        ...CONTAINER_STYLE,
-        justifyContent: isLeft ? "flex-start" : "flex-end",
-      }}
-    >
-      <div
-        style={{
-          ...WRAPPER_STYLE,
-          textAlign: isLeft ? "left" : "right",
-        }}
-      >
-        {/* Label de acento: "01 — HERO", "02 — BACKEND", etc. */}
-        <p ref={labelRef} style={LABEL_STYLE}>
-          {content.label}
-        </p>
+    <div style={OVERLAY_STYLE}>
+      {BLOCK_KEYS.map((key) => {
+        const { content } = BLOCKS[key];
+        const isLeft = content.side === "left";
 
-        {/* Línea decorativa roja. */}
-        <div
-          ref={accentRef}
-          style={{
-            ...ACCENT_LINE_STYLE,
-            marginLeft: isLeft ? 0 : "auto",
-            marginRight: isLeft ? "auto" : 0,
-          }}
-        />
+        return (
+          <div
+            key={key}
+            ref={blockRefs[key]}
+            style={{
+              ...BLOCK_CONTAINER_STYLE,
+              left: 0,
+              right: 0,
+              justifyContent: isLeft ? "flex-start" : "flex-end",
+            }}
+          >
+            <div
+              style={{
+                ...WRAPPER_STYLE,
+                textAlign: isLeft ? "left" : "right",
+              }}
+            >
+              <p data-el="label" style={LABEL_STYLE}>
+                {content.label}
+              </p>
 
-        {/* Título. */}
-        <h2 ref={titleRef} style={TITLE_STYLE}>
-          {content.title}
-        </h2>
+              <div
+                data-el="accent"
+                style={{
+                  ...ACCENT_LINE_STYLE,
+                  marginLeft: isLeft ? 0 : "auto",
+                  marginRight: isLeft ? "auto" : 0,
+                }}
+              />
 
-        {/* Cuerpo. */}
-        <p ref={bodyRef} style={BODY_STYLE}>
-          {content.body}
-        </p>
-      </div>
+              <h2 data-el="title" style={TITLE_STYLE}>
+                {content.title}
+              </h2>
+
+              <p data-el="body" style={BODY_STYLE}>
+                {content.body}
+              </p>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
