@@ -13,15 +13,23 @@ export interface ScrollPhase {
   name: string;
   start: number;
   end: number;
+  /**
+   * Fracción final del rango (0-1) donde la cámara ya está asentada
+   * en su encuadre de destino. El texto se revela durante este hold,
+   * no durante el tránsito. Un valor de 0 o ausente significa que
+   * la cámara es estática o la ventana de texto es la clásica
+   * 25%-50%-25% (sin distinción tránsito/hold).
+   */
+  holdFraction?: number;
 }
 
 /** Fases de la coreografía de cámara. */
 export const CAMERA_PHASES = {
-  hero: { name: "hero", start: 0, end: 0.12 },
-  backend: { name: "backend", start: 0.12, end: 0.36 },
-  transicion: { name: "transicion", start: 0.36, end: 0.48 },
-  frontend: { name: "frontend", start: 0.48, end: 0.8 },
-  explode: { name: "explode", start: 0.8, end: 1.0 },
+  hero: { name: "hero", start: 0, end: 0.12, holdFraction: 0 },
+  backend: { name: "backend", start: 0.12, end: 0.36, holdFraction: 0.35 },
+  transicion: { name: "transicion", start: 0.36, end: 0.48, holdFraction: 0 },
+  frontend: { name: "frontend", start: 0.48, end: 0.8, holdFraction: 0.35 },
+  explode: { name: "explode", start: 0.8, end: 1.0, holdFraction: 0.35 },
 } as const satisfies Record<string, ScrollPhase>;
 
 export const CAMERA_PHASES_LIST: ScrollPhase[] =

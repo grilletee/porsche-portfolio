@@ -43,10 +43,20 @@ export function useCameraAnimation() {
     }
 
     // Progreso local dentro del tramo, con easing aplicado.
+    // Si la fase tiene holdFraction > 0, la interpolación se comprime
+    // en los primeros (1 - holdFraction) del tramo; el resto del
+    // tramo la cámara se mantiene fija en su encuadre de destino.
     const range = segment.scrollEnd - segment.scrollStart;
     const localRaw = range > 0 ? (p - segment.scrollStart) / range : 0;
     const localClamped = Math.max(0, Math.min(1, localRaw));
-    const t = easeFn(localClamped);
+
+    const holdFraction = segment.holdFraction ?? 0;
+    const transitFraction = 1 - holdFraction;
+    const transitProgress =
+      transitFraction > 0
+        ? Math.max(0, Math.min(1, localClamped / transitFraction))
+        : 1;
+    const t = easeFn(transitProgress);
 
     // Interpolar posición y lookAt con Vector3.lerpVectors.
     _posFrom.set(...segment.fromPosition);
