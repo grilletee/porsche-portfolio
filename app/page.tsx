@@ -7,6 +7,7 @@ import { useExplodedView } from "@/hooks/useExplodedView";
 import ContentOverlay from "@/components/ui/ContentOverlay";
 import AISection from "@/components/ui/AISection";
 import ProjectsSection from "@/components/ui/ProjectsSection";
+import Footer from "@/components/ui/Footer";
 
 // El Canvas de R3F usa APIs de navegador (WebGL) que no existen en el
 // servidor. Cargarlo con ssr:false evita errores de hidratación.
@@ -91,9 +92,10 @@ export default function Home() {
       <ContentOverlay />
 
       {/* Secciones HTML posteriores — scroll normal, no ligadas a
-          scrollProgress (Sprint 8B). */}
+          scrollProgress (Sprint 8B / 8C). */}
       <AISection />
       <ProjectsSection />
+      <Footer />
     </main>
   );
 }

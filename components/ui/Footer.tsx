@@ -1,0 +1,97 @@
+"use client";
+
+import Reveal from "./Reveal";
+import TechButton from "./TechButton";
+import { BODY_STYLE, TITLE_STYLE } from "./sectionStyles";
+
+// ---------------------------------------------------------------------------
+// Footer (Sprint 8C): CTA de contacto + LinkedIn + GitHub + descarga CV.
+// El archivo /public/cv.pdf lo coloca el usuario manualmente.
+// ---------------------------------------------------------------------------
+const FOOTER_STYLE: React.CSSProperties = {
+  background: "#050505",
+  borderTop: "1px solid rgba(245, 245, 245, 0.08)",
+  padding: "12vh 8vw 8vh",
+  textAlign: "center",
+};
+
+const LINKS_ROW_STYLE: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 32,
+  flexWrap: "wrap",
+  marginTop: 40,
+};
+
+const LINK_STYLE: React.CSSProperties = {
+  fontFamily: "var(--font-jetbrains-mono), monospace",
+  fontSize: "0.8rem",
+  fontWeight: 500,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: "#f5f5f5",
+  textDecoration: "none",
+  transition: "color 0.2s",
+  cursor: "pointer",
+};
+
+const FOOTER_NOTE_STYLE: React.CSSProperties = {
+  fontFamily: "var(--font-jetbrains-mono), monospace",
+  fontSize: "0.65rem",
+  letterSpacing: "0.1em",
+  textTransform: "uppercase",
+  color: "rgba(245, 245, 245, 0.4)",
+  marginTop: 48,
+};
+
+export default function Footer() {
+  return (
+    <footer style={FOOTER_STYLE}>
+      <Reveal>
+        <h2 style={TITLE_STYLE}>¿Hablamos?</h2>
+        <p style={{ ...BODY_STYLE, marginTop: 12 }}>
+          Trabajando en backend, IoT e IA aplicada — escríbeme.
+        </p>
+        <div style={{ marginTop: 24 }}>
+          <TechButton href="mailto:grillete07@gmail.com">Contrátame</TechButton>
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.1}>
+        <div style={LINKS_ROW_STYLE}>
+          <a
+            href="https://www.linkedin.com/in/guillermo-sanchez-gutierrez/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={LINK_STYLE}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#ff3b30")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#f5f5f5")}
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://github.com/grilletee"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={LINK_STYLE}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#ff3b30")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#f5f5f5")}
+          >
+            GitHub
+          </a>
+          <a
+            href="/cv.pdf"
+            download
+            style={LINK_STYLE}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#ff3b30")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#f5f5f5")}
+          >
+            Descargar CV
+          </a>
+        </div>
+        <p style={FOOTER_NOTE_STYLE}>Guillermo Sánchez Gutiérrez — 2026</p>
+      </Reveal>
+    </footer>
+  );
+}
