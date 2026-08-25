@@ -19,6 +19,15 @@
 
 import { CAMERA_PHASES } from "@/lib/scrollPhases";
 
+// ---------------------------------------------------------------------------
+// Punto final de "sobre-mi" = punto inicial de "backend".
+// Definidos aquí como constantes para que el segmento de backend
+// empiece EXACTAMENTE donde termina sobre-mi — continuidad sin
+// duplicar números a mano (Sprint 9C).
+// ---------------------------------------------------------------------------
+const SOBRE_MI_END_POSITION: [number, number, number] = [0, 1.2, 6];
+const SOBRE_MI_END_LOOKAT: [number, number, number] = [0, 0.6, 2];
+
 export interface CameraSegment {
   scrollStart: number;
   scrollEnd: number;
@@ -54,25 +63,28 @@ export const CAMERA_SEGMENTS: CameraSegment[] = [
     toLookAt: [0, 0.5, 0],
   },
   {
-    // Tramo 1.5 (Sprint 9B): Sobre mí — micro-paneo lateral sutil.
-    // La cámara permanece fija en la posición del Hero y solo gira
-    // unos grados hacia la derecha. El protagonismo lo lleva el texto.
+    // Tramo 1.5 (Sprint 9C): Sobre mí — plano frontal claro del coche.
+    // Desde el encuadre hero (frontal-lateral elevado, [5,2.2,6]) la
+    // cámara gira y se desplaza hacia un plano frontal del morro
+    // ([0,1.2,6]). El contraste con el Hero hace la transición
+    // claramente perceptible.
     scrollStart: CAMERA_PHASES["sobre-mi"].start,
     scrollEnd: CAMERA_PHASES["sobre-mi"].end,
     holdFraction: CAMERA_PHASES["sobre-mi"].holdFraction,
     fromPosition: [5, 2.2, 6],
-    toPosition: [5, 2.2, 6],
+    toPosition: SOBRE_MI_END_POSITION,
     fromLookAt: [0, 0.5, 0],
-    toLookAt: [0.35, 0.5, 0.25],
+    toLookAt: SOBRE_MI_END_LOOKAT,
   },
   {
     // Tramo 2: Backend/motor — acercamiento agresivo a la zona trasera.
+    // from* = final de sobre-mi (continuidad garantizada sin saltos).
     scrollStart: CAMERA_PHASES.backend.start,
     scrollEnd: CAMERA_PHASES.backend.end,
     holdFraction: CAMERA_PHASES.backend.holdFraction,
-    fromPosition: [5, 2.2, 6],
+    fromPosition: SOBRE_MI_END_POSITION,
     toPosition: [1.5, 0.9, -3],
-    fromLookAt: [0.35, 0.5, 0.25],
+    fromLookAt: SOBRE_MI_END_LOOKAT,
     toLookAt: [0, 0.7, -2.5],
   },
   {
