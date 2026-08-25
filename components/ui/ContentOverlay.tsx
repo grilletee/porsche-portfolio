@@ -3,21 +3,21 @@
 import { useEffect, useRef } from "react";
 import { useScrollStore } from "@/store/useScrollStore";
 import { CAMERA_PHASES } from "@/lib/scrollPhases";
-import { getTextRevealStateStaggered } from "@/lib/textReveal";
+import { getTextRevealStateStaggered, getTextRevealState } from "@/lib/textReveal";
 import type { ScrollPhase } from "@/lib/scrollPhases";
 
 // ---------------------------------------------------------------------------
-// Contenido por fase.
-// "transicion" no tiene bloque (es un respiro visual).
+// Contenido por fase (Sprint 7C: renumerado, añadida fase ia + tags).
 // ---------------------------------------------------------------------------
 interface PhaseContent {
   label: string;
   title: string;
   body: string;
   side: "left" | "right";
+  tags?: string[];
 }
 
-type PhaseKey = "hero" | "backend" | "frontend" | "explode";
+type PhaseKey = "hero" | "backend" | "frontend" | "ia" | "explode";
 
 const BLOCKS: Record<
   PhaseKey,
@@ -38,6 +38,7 @@ const BLOCKS: Record<
       title: "Arquitectura y Microservicios",
       body: "Desarrollo de CRM con Java, Spring Boot, Spring Security (JWT) y bases de datos relacionales en PostgreSQL.",
       side: "right",
+      tags: ["Java", "Spring Boot", "JWT", "PostgreSQL"],
     },
     phase: CAMERA_PHASES.backend,
   },
@@ -47,15 +48,27 @@ const BLOCKS: Record<
       title: "Ecosistema UI",
       body: "Construcción de interfaces reactivas con Angular usando Signals, React y Tailwind CSS.",
       side: "left",
+      tags: ["Angular", "React", "Tailwind CSS"],
     },
     phase: CAMERA_PHASES.frontend,
   },
+  ia: {
+    content: {
+      label: "04 — INTELIGENCIA ARTIFICIAL",
+      title: "Agentes e Inteligencia Aplicada",
+      body: "Desarrollo de agentes de IA autónomos con memoria RAG (TCG Agent) y APIs de análisis inteligente con Google Gemini (CV Analyzer API), construidos en Python con FastAPI y bases de datos vectoriales.",
+      side: "right",
+      tags: ["Python", "FastAPI", "Google Gemini", "RAG"],
+    },
+    phase: CAMERA_PHASES.ia,
+  },
   explode: {
     content: {
-      label: "04 — HARDWARE",
+      label: "05 — HARDWARE",
       title: "Ingeniería Inteligente",
       body: "Top 4 Nacional Eco-Digithon. Integración de microcontroladores Arduino, sensores telemétricos, MQTT y Node.js.",
-      side: "right",
+      side: "left",
+      tags: ["Arduino", "MQTT", "Node.js", "IoT"],
     },
     phase: CAMERA_PHASES.explode,
   },
@@ -64,18 +77,18 @@ const BLOCKS: Record<
 const BLOCK_KEYS = Object.keys(BLOCKS) as PhaseKey[];
 
 // ---------------------------------------------------------------------------
-// Stagger offsets (en unidades de scrollProgress) entre sub-elementos.
-// label primero, acento, título y cuerpo en cascada de ~0.08s cada uno.
+// Stagger offsets entre sub-elementos.
 // ---------------------------------------------------------------------------
 const STAGGER_OFFSETS = {
   label: 0,
   accent: 0.003,
   title: 0.006,
   body: 0.009,
+  tags: 0.012,
 };
 
 // ---------------------------------------------------------------------------
-// Helper: aplica un RevealState directamente al DOM de un elemento.
+// Helpers DOM
 // ---------------------------------------------------------------------------
 function applyReveal(el: HTMLElement | null, opacity: number, translateY: number) {
   if (!el) return;
@@ -83,9 +96,11 @@ function applyReveal(el: HTMLElement | null, opacity: number, translateY: number
   el.style.transform = `translateY(${translateY}px)`;
 }
 
-// ---------------------------------------------------------------------------
-// Helper: actualiza los 4 sub-elementos de un bloque desde un contenedor.
-// ---------------------------------------------------------------------------
+function applyRevealTag(el: HTMLElement | null, opacity: number) {
+  if (!el) return;
+  el.style.opacity = String(opacity);
+}
+
 function updateBlock(
   container: HTMLDivElement | null,
   scrollProgress: number,
@@ -97,123 +112,179 @@ function updateBlock(
   const accent = container.querySelector('[data-el="accent"]') as HTMLElement | null;
   const title = container.querySelector('[data-el="title"]') as HTMLElement | null;
   const body = container.querySelector('[data-el="body"]') as HTMLElement | null;
+  const tagEls = container.querySelectorAll('[data-el="tag"]') as NodeListOf<HTMLElement>;
 
-  const sLabel = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.label);
-  const sAccent = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.accent);
-  const sTitle = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.title);
-  const sBody = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.body);
+  applyReveal(label, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.label)));
+  applyReveal(accent, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.accent)));
+  applyReveal(title, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.title)));
+  applyReveal(body, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.body)));
 
-  applyReveal(label, sLabel.opacity, sLabel.translateY);
-  applyReveal(accent, sAccent.opacity, sAccent.translateY);
-  applyReveal(title, sTitle.opacity, sTitle.translateY);
-  applyReveal(body, sBody.opacity, sBody.translateY);
+  const tagState = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.tags);
+  tagEls.forEach((el) => applyRevealTag(el, tagState.opacity));
 }
+
+function destructure(s: { opacity: number; translateY: number }): [number, number] {
+  return [s.opacity, s.translateY];
+}
+
+// ---------------------------------------------------------------------------
+// CTA en la fase explode (scroll > 0.92)
+// ---------------------------------------------------------------------------
+const CTA_PHASE: ScrollPhase = { name: "cta", start: 0.92, end: 1.0 };
 
 // ---------------------------------------------------------------------------
 // Estilos
 // ---------------------------------------------------------------------------
 const OVERLAY_STYLE: React.CSSProperties = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100vw",
-  height: "100vh",
-  zIndex: 10,
-  pointerEvents: "none",
+  position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+  zIndex: 10, pointerEvents: "none",
 };
 
 const BLOCK_CONTAINER_STYLE: React.CSSProperties = {
-  position: "absolute",
-  top: 0,
-  height: "100vh",
-  display: "flex",
-  alignItems: "center",
-  padding: "0 8vw",
+  position: "absolute", top: 0, height: "100vh",
+  display: "flex", alignItems: "center", padding: "0 8vw",
 };
 
 const WRAPPER_STYLE: React.CSSProperties = {
-  maxWidth: 540,
-  textShadow: "0 1px 8px rgba(0,0,0,0.6)",
+  maxWidth: 540, textShadow: "0 1px 8px rgba(0,0,0,0.6)",
 };
 
 const LABEL_STYLE: React.CSSProperties = {
-  margin: 0,
-  fontFamily: "system-ui",
-  fontSize: "0.75rem",
-  fontWeight: 500,
-  letterSpacing: "0.15em",
-  textTransform: "uppercase",
-  color: "#ff3b30",
+  margin: 0, fontFamily: "system-ui", fontSize: "0.75rem", fontWeight: 500,
+  letterSpacing: "0.15em", textTransform: "uppercase", color: "#ff3b30",
   opacity: 0,
 };
 
 const ACCENT_LINE_STYLE: React.CSSProperties = {
-  width: 40,
-  height: 2,
-  background: "#ff3b30",
-  marginTop: 8,
-  marginBottom: 20,
-  opacity: 0,
+  width: 40, height: 2, background: "#ff3b30",
+  marginTop: 8, marginBottom: 20, opacity: 0,
 };
 
 const TITLE_STYLE: React.CSSProperties = {
-  margin: 0,
-  fontFamily: "var(--font-space-grotesk), system-ui, sans-serif",
-  fontWeight: 700,
-  fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
-  letterSpacing: "-0.02em",
-  textTransform: "none",
-  color: "#f5f5f5",
-  lineHeight: 1.05,
-  opacity: 0,
+  margin: 0, fontFamily: "var(--font-space-grotesk), system-ui, sans-serif",
+  fontWeight: 700, fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+  letterSpacing: "-0.02em", textTransform: "none", color: "#f5f5f5",
+  lineHeight: 1.05, opacity: 0,
 };
 
 const BODY_STYLE: React.CSSProperties = {
-  margin: 0,
-  marginTop: "0.75rem",
-  fontFamily: "system-ui",
-  fontWeight: 400,
+  margin: 0, marginTop: "0.75rem", fontFamily: "system-ui", fontWeight: 400,
   fontSize: "clamp(1rem, 1.3vw, 1.15rem)",
-  color: "rgba(245, 245, 245, 0.75)",
-  lineHeight: 1.6,
-  maxWidth: "32ch",
+  color: "rgba(245, 245, 245, 0.75)", lineHeight: 1.6, maxWidth: "32ch",
   opacity: 0,
+};
+
+const TAGS_ROW_STYLE: React.CSSProperties = {
+  display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap",
+};
+
+const TAG_STYLE: React.CSSProperties = {
+  border: "1px solid rgba(255, 59, 48, 0.6)", color: "rgba(255, 59, 48, 0.6)",
+  fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.05em",
+  textTransform: "uppercase", padding: "4px 10px", borderRadius: 2,
+  opacity: 0, pointerEvents: "none",
+};
+
+// ---- Indicador "Disponible" persistente ----
+const AVAIL_INDICATOR_STYLE: React.CSSProperties = {
+  position: "fixed", top: 20, right: 24, zIndex: 11,
+  display: "flex", alignItems: "center", gap: 8,
+  opacity: 0.5, transition: "opacity 0.2s",
+  pointerEvents: "auto",
+};
+
+const AVAIL_DOT_STYLE: React.CSSProperties = {
+  width: 7, height: 7, borderRadius: "50%", background: "#4ade80",
+  boxShadow: "0 0 6px rgba(74, 222, 128, 0.5)",
+};
+
+const AVAIL_TEXT_STYLE: React.CSSProperties = {
+  fontFamily: "system-ui", fontSize: "0.65rem", fontWeight: 500,
+  letterSpacing: "0.1em", textTransform: "uppercase", color: "#f5f5f5",
+};
+
+// ---- CTA final ----
+const CTA_CONTAINER_STYLE: React.CSSProperties = {
+  position: "fixed", bottom: 0, left: 0, width: "100vw",
+  zIndex: 11, pointerEvents: "none",
+  display: "flex", justifyContent: "center", padding: "0 8vw 10vh",
+};
+
+const CTA_WRAPPER_STYLE: React.CSSProperties = {
+  textAlign: "center", maxWidth: 420,
+  textShadow: "0 1px 8px rgba(0,0,0,0.6)",
+};
+
+const CTA_TITLE_STYLE: React.CSSProperties = {
+  margin: 0, fontFamily: "var(--font-space-grotesk), system-ui, sans-serif",
+  fontWeight: 700, fontSize: "clamp(2rem, 4vw, 3.5rem)",
+  color: "#f5f5f5", lineHeight: 1.1, opacity: 0,
+};
+
+const CTA_BUTTON_STYLE: React.CSSProperties = {
+  display: "inline-block", marginTop: 16,
+  padding: "14px 36px", background: "#f5f5f5", color: "#050505",
+  fontFamily: "system-ui", fontSize: "1rem", fontWeight: 600,
+  letterSpacing: "0.03em", textDecoration: "none",
+  borderRadius: 2, opacity: 0, pointerEvents: "auto",
+  transition: "opacity 0.15s",
 };
 
 // ---------------------------------------------------------------------------
 // Componente
 // ---------------------------------------------------------------------------
 export default function ContentOverlay() {
-  // Refs a los contenedores de cada bloque.
   const heroRef = useRef<HTMLDivElement>(null!);
   const backendRef = useRef<HTMLDivElement>(null!);
   const frontendRef = useRef<HTMLDivElement>(null!);
+  const iaRef = useRef<HTMLDivElement>(null!);
   const explodeRef = useRef<HTMLDivElement>(null!);
 
   const blockRefs: Record<PhaseKey, React.RefObject<HTMLDivElement>> = {
     hero: heroRef,
     backend: backendRef,
     frontend: frontendRef,
+    ia: iaRef,
     explode: explodeRef,
   };
 
+  // CTA refs
+  const ctaTitleRef = useRef<HTMLHeadingElement>(null);
+  const ctaButtonRef = useRef<HTMLAnchorElement>(null);
+
+  // Indicador de disponibilidad
+  const availRef = useRef<HTMLDivElement>(null);
+
   // ------------------------------------------------------------------
-  // Suscripción continua al store: en cada cambio de scrollProgress,
-  // recalcula el estado de revelado de los 4 bloques y lo aplica
-  // directamente al DOM (sin pasar por setState de React).
+  // Suscripción continua
   // ------------------------------------------------------------------
   useEffect(() => {
     const unsub = useScrollStore.subscribe((state) => {
       const p = state.scrollProgress;
+
+      // Bloques de fase
       for (const key of BLOCK_KEYS) {
         updateBlock(blockRefs[key].current, p, BLOCKS[key].phase);
       }
+
+      // CTA final (aparece al final, scroll > 0.92)
+      const ctaTitleState = getTextRevealStateStaggered(p, CTA_PHASE, 0);
+      const ctaBtnState = getTextRevealStateStaggered(p, CTA_PHASE, 0.003);
+      applyReveal(ctaTitleRef.current, ctaTitleState.opacity, ctaTitleState.translateY);
+      applyReveal(ctaButtonRef.current, ctaBtnState.opacity, ctaBtnState.translateY);
+
+      // Indicador de disponibilidad: visible desde hero en adelante
+      if (availRef.current) {
+        availRef.current.style.opacity = p < CAMERA_PHASES.hero.start ? "0" : "1";
+      }
     });
 
-    // También calcular una vez al montar (antes del primer evento de scroll).
     const p = useScrollStore.getState().scrollProgress;
     for (const key of BLOCK_KEYS) {
       updateBlock(blockRefs[key].current, p, BLOCKS[key].phase);
+    }
+    if (availRef.current) {
+      availRef.current.style.opacity = p < CAMERA_PHASES.hero.start ? "0" : "1";
     }
 
     return unsub;
@@ -221,10 +292,22 @@ export default function ContentOverlay() {
   }, []);
 
   // ------------------------------------------------------------------
-  // Render: los 4 bloques están siempre en el DOM.
+  // Render
   // ------------------------------------------------------------------
   return (
     <div style={OVERLAY_STYLE}>
+      {/* Indicador "Disponible" persistente (esquina superior derecha) */}
+      <div
+        ref={availRef}
+        style={AVAIL_INDICATOR_STYLE}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "1"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "0.5"; }}
+      >
+        <span style={AVAIL_DOT_STYLE} />
+        <span style={AVAIL_TEXT_STYLE}>Disponible</span>
+      </div>
+
+      {/* Bloques de fase */}
       {BLOCK_KEYS.map((key) => {
         const { content } = BLOCKS[key];
         const isLeft = content.side === "left";
@@ -235,20 +318,12 @@ export default function ContentOverlay() {
             ref={blockRefs[key]}
             style={{
               ...BLOCK_CONTAINER_STYLE,
-              left: 0,
-              right: 0,
+              left: 0, right: 0,
               justifyContent: isLeft ? "flex-start" : "flex-end",
             }}
           >
-            <div
-              style={{
-                ...WRAPPER_STYLE,
-                textAlign: isLeft ? "left" : "right",
-              }}
-            >
-              <p data-el="label" style={LABEL_STYLE}>
-                {content.label}
-              </p>
+            <div style={{ ...WRAPPER_STYLE, textAlign: isLeft ? "left" : "right" }}>
+              <p data-el="label" style={LABEL_STYLE}>{content.label}</p>
 
               <div
                 data-el="accent"
@@ -259,17 +334,40 @@ export default function ContentOverlay() {
                 }}
               />
 
-              <h2 data-el="title" style={TITLE_STYLE}>
-                {content.title}
-              </h2>
+              <h2 data-el="title" style={TITLE_STYLE}>{content.title}</h2>
+              <p data-el="body" style={BODY_STYLE}>{content.body}</p>
 
-              <p data-el="body" style={BODY_STYLE}>
-                {content.body}
-              </p>
+              {/* Tags de stack */}
+              {content.tags && (
+                <div style={TAGS_ROW_STYLE}>
+                  {content.tags.map((tag) => (
+                    <span key={tag} data-el="tag" style={TAG_STYLE}>{tag}</span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         );
       })}
+
+      {/* CTA final */}
+      <div style={CTA_CONTAINER_STYLE}>
+        <div style={CTA_WRAPPER_STYLE}>
+          <h3 ref={ctaTitleRef} style={CTA_TITLE_STYLE}>
+            ¿Hablamos?
+          </h3>
+          <a
+            ref={ctaButtonRef}
+            href="mailto:grillete07@gmail.com"
+            style={{
+              ...CTA_BUTTON_STYLE,
+              display: "inline-block",
+            }}
+          >
+            Contrátame
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
