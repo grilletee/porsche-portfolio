@@ -5,9 +5,9 @@
  * (cámara, fondo, vista explosionada, overlays de contenido) importan
  * sus rangos desde aquí para mantener consistencia y evitar duplicación.
  *
- * Sprint 6: fase "intro" (0–6%) — barrido de cámara (dolly-in) desde
- * un plano abierto al encuadre hero. El resto de fases se reescalan
- * proporcionalmente con new = 0.06 + old × 0.94.
+ * Sprint 7: fase "transicion" renombrada a "ia" y movida entre
+ * frontend y explode. Cada fase conserva su ancho original del
+ * Sprint 6 (solo cambia el orden). BG_TRANSITION anclado a la fase ia.
  */
 
 export interface ScrollPhase {
@@ -23,43 +23,38 @@ export interface ScrollPhase {
 }
 
 // ---------------------------------------------------------------------------
-// Rescalado proporcional:
-//   new = introEnd + old * (1 - introEnd)
+// Reordenamiento (Sprint 7A): los anchos individuales no cambian respecto
+// al Sprint 6. Solo se permuta el orden:
+//   intro[0.06] hero[0.1128] backend[0.2256] frontend[0.3008] ia[0.1128] explode[0.1880]
+//   = 0.06 + 0.1128 + 0.2256 + 0.3008 + 0.1128 + 0.1880 = 1.0 ✓
 // ---------------------------------------------------------------------------
-const INTRO_END = 0.06;
-const SCALE = 1 - INTRO_END; // 0.94
 
 /** Fases de la coreografía de cámara. */
 export const CAMERA_PHASES = {
-  intro: { name: "intro", start: 0, end: INTRO_END, holdFraction: 0 },
-  hero: {
-    name: "hero",
-    start: INTRO_END + 0 * SCALE,
-    end: INTRO_END + 0.12 * SCALE,
-    holdFraction: 0,
-  },
+  intro: { name: "intro", start: 0, end: 0.06, holdFraction: 0 },
+  hero: { name: "hero", start: 0.06, end: 0.1728, holdFraction: 0 },
   backend: {
     name: "backend",
-    start: INTRO_END + 0.12 * SCALE,
-    end: INTRO_END + 0.36 * SCALE,
+    start: 0.1728,
+    end: 0.3984,
     holdFraction: 0.35,
-  },
-  transicion: {
-    name: "transicion",
-    start: INTRO_END + 0.36 * SCALE,
-    end: INTRO_END + 0.48 * SCALE,
-    holdFraction: 0,
   },
   frontend: {
     name: "frontend",
-    start: INTRO_END + 0.48 * SCALE,
-    end: INTRO_END + 0.8 * SCALE,
+    start: 0.3984,
+    end: 0.6992,
     holdFraction: 0.35,
+  },
+  ia: {
+    name: "ia",
+    start: 0.6992,
+    end: 0.812,
+    holdFraction: 0,
   },
   explode: {
     name: "explode",
-    start: INTRO_END + 0.8 * SCALE,
-    end: INTRO_END + 1.0 * SCALE,
+    start: 0.812,
+    end: 1.0,
     holdFraction: 0.35,
   },
 } as const satisfies Record<string, ScrollPhase>;
@@ -67,17 +62,17 @@ export const CAMERA_PHASES = {
 export const CAMERA_PHASES_LIST: ScrollPhase[] =
   Object.values(CAMERA_PHASES);
 
-/** Rango de la transición de color de fondo (rescalado proporcionalmente). */
+/** Rango de la transición de color de fondo (anclado a la fase ia). */
 export const BG_TRANSITION = {
-  start: INTRO_END + 0.35 * SCALE,
-  peak: INTRO_END + 0.55 * SCALE,
-  end: INTRO_END + 0.75 * SCALE,
+  start: CAMERA_PHASES.ia.start,
+  peak: (CAMERA_PHASES.ia.start + CAMERA_PHASES.ia.end) / 2,
+  end: CAMERA_PHASES.ia.end,
 } as const;
 
-/** Rango de la vista explosionada (rescalado proporcionalmente). */
+/** Rango de la vista explosionada. */
 export const EXPLODE_RANGE = {
-  start: INTRO_END + 0.8 * SCALE,
-  end: INTRO_END + 1.0 * SCALE,
+  start: CAMERA_PHASES.explode.start,
+  end: CAMERA_PHASES.explode.end,
 } as const;
 
 /**

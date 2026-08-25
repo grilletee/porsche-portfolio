@@ -4,16 +4,15 @@
  * Cada segmento define un tramo del scroll (0-1) con posición
  * y punto de mirada inicial y final. La interpolación entre ellos
  * se aplica con easing expo.inOut para un timing seco y mecánico
- * (inspiración: la home de Anime.js). El segmento "intro" usa
- * expo.out como excepción (el easing por defecto se puede
- * sobreescribir con la propiedad easing opcional).
+ * (inspiración: la home de Anime.js).
  *
  * holdFraction (desde scrollPhases.ts): fracción del tramo donde
  * la cámara ya está asentada. La interpolación se comprime en
  * (1 - holdFraction) del rango; el resto permanece fija en destino.
  *
- * Sprint 6: añadido segmento "intro" — barrido de cámara (dolly-in)
- * desde un plano abierto al encuadre hero.
+ * Sprint 7A: fase "ia" (antes "transicion") movida entre frontend y
+ * explode. Keyframe enfoca el panel de gauges/pantalla digital del
+ * habitáculo (nodo TwiXeR_992_gauges_screen).
  *
  * Rangos de scroll: importados desde /lib/scrollPhases.ts (fuente única).
  */
@@ -34,9 +33,7 @@ export interface CameraSegment {
 
 export const CAMERA_SEGMENTS: CameraSegment[] = [
   {
-    // Tramo 0 (Sprint 6): Intro — dolly-in desde un plano abierto
-    // hasta el encuadre hero. La cámara llega rápido y frena en seco
-    // (expo.out, como una frenada, no expo.inOut como los viajes).
+    // Tramo 0: Intro — dolly-in desde un plano abierto al encuadre hero.
     scrollStart: CAMERA_PHASES.intro.start,
     scrollEnd: CAMERA_PHASES.intro.end,
     holdFraction: CAMERA_PHASES.intro.holdFraction,
@@ -67,33 +64,35 @@ export const CAMERA_SEGMENTS: CameraSegment[] = [
     toLookAt: [0, 0.7, -2.5],
   },
   {
-    // Tramo 3: Transición — cámara se retira a posición elevada central.
-    scrollStart: CAMERA_PHASES.transicion.start,
-    scrollEnd: CAMERA_PHASES.transicion.end,
-    holdFraction: CAMERA_PHASES.transicion.holdFraction,
-    fromPosition: [1.5, 0.9, -3],
-    toPosition: [0, 3, 4],
-    fromLookAt: [0, 0.7, -2.5],
-    toLookAt: [0, 0.5, 0],
-  },
-  {
-    // Tramo 4: Frontend/habitáculo — entrada al lateral del chasis.
+    // Tramo 3: Frontend/habitáculo — entrada al lateral del chasis.
     scrollStart: CAMERA_PHASES.frontend.start,
     scrollEnd: CAMERA_PHASES.frontend.end,
     holdFraction: CAMERA_PHASES.frontend.holdFraction,
-    fromPosition: [0, 3, 4],
+    fromPosition: [1.5, 0.9, -3],
     toPosition: [1.2, 1, 0.5],
-    fromLookAt: [0, 0.5, 0],
+    fromLookAt: [0, 0.7, -2.5],
     toLookAt: [0, 0.8, 0],
+  },
+  {
+    // Tramo 4 (Sprint 7A): IA — close-up del panel de gauges/pantalla
+    // digital como metáfora de "pantalla digital = IA".
+    // El nodo de referencia está en [0.338, 0.797, 0.367].
+    scrollStart: CAMERA_PHASES.ia.start,
+    scrollEnd: CAMERA_PHASES.ia.end,
+    holdFraction: CAMERA_PHASES.ia.holdFraction,
+    fromPosition: [1.2, 1, 0.5],
+    toPosition: [2, 1.2, 1.8],
+    fromLookAt: [0, 0.8, 0],
+    toLookAt: [0.338, 0.797, 0.367],
   },
   {
     // Tramo 5: Vista general — para apreciar el despiece completo.
     scrollStart: CAMERA_PHASES.explode.start,
     scrollEnd: CAMERA_PHASES.explode.end,
     holdFraction: CAMERA_PHASES.explode.holdFraction,
-    fromPosition: [1.2, 1, 0.5],
+    fromPosition: [2, 1.2, 1.8],
     toPosition: [4, 4, 7],
-    fromLookAt: [0, 0.8, 0],
+    fromLookAt: [0.338, 0.797, 0.367],
     toLookAt: [0, 1, 0],
   },
 ];
