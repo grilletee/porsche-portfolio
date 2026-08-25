@@ -16,6 +16,9 @@ interface PhaseContent {
   body: string;
   side: "left" | "right";
   tags?: string[];
+  /** Tagline secundaria (debajo del body, más pequeña que el título pero
+   *  mayor que el cuerpo normal). Solo se usa en hero. */
+  tagline?: string;
 }
 
 type PhaseKey = "hero" | "backend" | "frontend" | "ia" | "explode";
@@ -26,10 +29,12 @@ const BLOCKS: Record<
 > = {
   hero: {
     content: {
-      label: "01 — HERO",
-      title: "Guillermo",
+      label: "HERO",
+      title: "Guillermo Sánchez",
       body: "Full Stack Developer",
       side: "left",
+      tagline:
+        "Construyo aplicaciones que van del sensor al servidor y del servidor a la pantalla. Del hardware con Arduino hasta agentes de IA.",
     },
     phase: CAMERA_PHASES.hero,
   },
@@ -85,7 +90,8 @@ const STAGGER_OFFSETS = {
   accent: 0.003,
   title: 0.006,
   body: 0.009,
-  tags: 0.012,
+  tagline: 0.012,
+  tags: 0.015,
 };
 
 // ---------------------------------------------------------------------------
@@ -113,12 +119,14 @@ function updateBlock(
   const accent = container.querySelector('[data-el="accent"]') as HTMLElement | null;
   const title = container.querySelector('[data-el="title"]') as HTMLElement | null;
   const body = container.querySelector('[data-el="body"]') as HTMLElement | null;
+  const tagline = container.querySelector('[data-el="tagline"]') as HTMLElement | null;
   const tagEls = container.querySelectorAll('[data-el="tag"]') as NodeListOf<HTMLElement>;
 
   applyReveal(label, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.label)));
   applyReveal(accent, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.accent)));
   applyReveal(title, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.title)));
   applyReveal(body, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.body)));
+  applyReveal(tagline, ...destructure(getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.tagline)));
 
   const tagState = getTextRevealStateStaggered(scrollProgress, phase, STAGGER_OFFSETS.tags);
   tagEls.forEach((el) => applyRevealTag(el, tagState.opacity));
@@ -180,6 +188,13 @@ const BODY_STYLE: React.CSSProperties = {
   margin: 0, marginTop: "0.75rem", fontFamily: "system-ui", fontWeight: 400,
   fontSize: "clamp(1rem, 1.3vw, 1.15rem)",
   color: "rgba(245, 245, 245, 0.75)", lineHeight: 1.6, maxWidth: "32ch",
+  opacity: 0,
+};
+
+const TAGLINE_STYLE: React.CSSProperties = {
+  margin: 0, marginTop: "0.6rem", fontFamily: "system-ui", fontWeight: 400,
+  fontSize: "clamp(0.95rem, 1.2vw, 1.05rem)",
+  color: "rgba(245, 245, 245, 0.65)", lineHeight: 1.5, maxWidth: "40ch",
   opacity: 0,
 };
 
@@ -379,6 +394,11 @@ export default function ContentOverlay() {
 
                 <h2 data-el="title" style={TITLE_STYLE}>{content.title}</h2>
                 <p data-el="body" style={BODY_STYLE}>{content.body}</p>
+
+                {/* Tagline secundaria (solo hero, Sprint 9A) */}
+                {content.tagline && (
+                  <p data-el="tagline" style={TAGLINE_STYLE}>{content.tagline}</p>
+                )}
 
                 {/* Tags de stack */}
                 {content.tags && (
