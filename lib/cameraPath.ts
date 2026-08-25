@@ -4,11 +4,16 @@
  * Cada segmento define un tramo del scroll (0-1) con posición
  * y punto de mirada inicial y final. La interpolación entre ellos
  * se aplica con easing expo.inOut para un timing seco y mecánico
- * (inspiración: la home de Anime.js).
+ * (inspiración: la home de Anime.js). El segmento "intro" usa
+ * expo.out como excepción (el easing por defecto se puede
+ * sobreescribir con la propiedad easing opcional).
  *
  * holdFraction (desde scrollPhases.ts): fracción del tramo donde
  * la cámara ya está asentada. La interpolación se comprime en
  * (1 - holdFraction) del rango; el resto permanece fija en destino.
+ *
+ * Sprint 6: añadido segmento "intro" — barrido de cámara (dolly-in)
+ * desde un plano abierto al encuadre hero.
  *
  * Rangos de scroll: importados desde /lib/scrollPhases.ts (fuente única).
  */
@@ -23,9 +28,24 @@ export interface CameraSegment {
   toPosition: [number, number, number];
   fromLookAt: [number, number, number];
   toLookAt: [number, number, number];
+  /** Easing override (default: "expo.inOut" si no se especifica). */
+  easing?: string;
 }
 
 export const CAMERA_SEGMENTS: CameraSegment[] = [
+  {
+    // Tramo 0 (Sprint 6): Intro — dolly-in desde un plano abierto
+    // hasta el encuadre hero. La cámara llega rápido y frena en seco
+    // (expo.out, como una frenada, no expo.inOut como los viajes).
+    scrollStart: CAMERA_PHASES.intro.start,
+    scrollEnd: CAMERA_PHASES.intro.end,
+    holdFraction: CAMERA_PHASES.intro.holdFraction,
+    fromPosition: [10, 5, 14],
+    toPosition: [5, 2.2, 6],
+    fromLookAt: [0, 0.5, 0],
+    toLookAt: [0, 0.5, 0],
+    easing: "expo.out",
+  },
   {
     // Tramo 1: Hero — cámara estática frontal-lateral elevada.
     scrollStart: CAMERA_PHASES.hero.start,

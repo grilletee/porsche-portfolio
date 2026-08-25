@@ -5,8 +5,9 @@
  * (cámara, fondo, vista explosionada, overlays de contenido) importan
  * sus rangos desde aquí para mantener consistencia y evitar duplicación.
  *
- * Sprint 5: extraídos los rangos reales que ya funcionaban en
- * cameraPath.ts, useBackgroundColor.ts y useExplodedView.ts.
+ * Sprint 6: fase "intro" (0–6%) — barrido de cámara (dolly-in) desde
+ * un plano abierto al encuadre hero. El resto de fases se reescalan
+ * proporcionalmente con new = 0.06 + old × 0.94.
  */
 
 export interface ScrollPhase {
@@ -16,41 +17,72 @@ export interface ScrollPhase {
   /**
    * Fracción final del rango (0-1) donde la cámara ya está asentada
    * en su encuadre de destino. El texto se revela durante este hold,
-   * no durante el tránsito. Un valor de 0 o ausente significa que
-   * la cámara es estática o la ventana de texto es la clásica
-   * 25%-50%-25% (sin distinción tránsito/hold).
+   * no durante el tránsito.
    */
   holdFraction?: number;
 }
 
+// ---------------------------------------------------------------------------
+// Rescalado proporcional:
+//   new = introEnd + old * (1 - introEnd)
+// ---------------------------------------------------------------------------
+const INTRO_END = 0.06;
+const SCALE = 1 - INTRO_END; // 0.94
+
 /** Fases de la coreografía de cámara. */
 export const CAMERA_PHASES = {
-  hero: { name: "hero", start: 0, end: 0.12, holdFraction: 0 },
-  backend: { name: "backend", start: 0.12, end: 0.36, holdFraction: 0.35 },
-  transicion: { name: "transicion", start: 0.36, end: 0.48, holdFraction: 0 },
-  frontend: { name: "frontend", start: 0.48, end: 0.8, holdFraction: 0.35 },
-  explode: { name: "explode", start: 0.8, end: 1.0, holdFraction: 0.35 },
+  intro: { name: "intro", start: 0, end: INTRO_END, holdFraction: 0 },
+  hero: {
+    name: "hero",
+    start: INTRO_END + 0 * SCALE,
+    end: INTRO_END + 0.12 * SCALE,
+    holdFraction: 0,
+  },
+  backend: {
+    name: "backend",
+    start: INTRO_END + 0.12 * SCALE,
+    end: INTRO_END + 0.36 * SCALE,
+    holdFraction: 0.35,
+  },
+  transicion: {
+    name: "transicion",
+    start: INTRO_END + 0.36 * SCALE,
+    end: INTRO_END + 0.48 * SCALE,
+    holdFraction: 0,
+  },
+  frontend: {
+    name: "frontend",
+    start: INTRO_END + 0.48 * SCALE,
+    end: INTRO_END + 0.8 * SCALE,
+    holdFraction: 0.35,
+  },
+  explode: {
+    name: "explode",
+    start: INTRO_END + 0.8 * SCALE,
+    end: INTRO_END + 1.0 * SCALE,
+    holdFraction: 0.35,
+  },
 } as const satisfies Record<string, ScrollPhase>;
 
 export const CAMERA_PHASES_LIST: ScrollPhase[] =
   Object.values(CAMERA_PHASES);
 
-/** Rango de la transición de color de fondo. */
+/** Rango de la transición de color de fondo (rescalado proporcionalmente). */
 export const BG_TRANSITION = {
-  start: 0.35,
-  peak: 0.55,   // punto medio donde el fondo es #e8e8e8
-  end: 0.75,
+  start: INTRO_END + 0.35 * SCALE,
+  peak: INTRO_END + 0.55 * SCALE,
+  end: INTRO_END + 0.75 * SCALE,
 } as const;
 
-/** Rango de la vista explosionada. */
+/** Rango de la vista explosionada (rescalado proporcionalmente). */
 export const EXPLODE_RANGE = {
-  start: 0.8,
-  end: 1.0,
+  start: INTRO_END + 0.8 * SCALE,
+  end: INTRO_END + 1.0 * SCALE,
 } as const;
 
 /**
  * Devuelve el nombre de la fase de cámara activa para un
- * scrollProgress dado. Útil para overlays de contenido.
+ * scrollProgress dado.
  */
 export function getActiveCameraPhase(scrollProgress: number): ScrollPhase {
   for (let i = CAMERA_PHASES_LIST.length - 1; i >= 0; i--) {
@@ -58,5 +90,5 @@ export function getActiveCameraPhase(scrollProgress: number): ScrollPhase {
       return CAMERA_PHASES_LIST[i];
     }
   }
-  return CAMERA_PHASES.hero;
+  return CAMERA_PHASES.intro;
 }

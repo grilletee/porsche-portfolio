@@ -7,14 +7,24 @@ import { useScrollStore } from "@/store/useScrollStore";
 import { CAMERA_SEGMENTS } from "@/lib/cameraPath";
 
 /**
- * Easing expo.inOut cacheado — da el timing seco y agresivo
- * (arranque brusco, frenada brusca) característico del proyecto.
+ * Easing por defecto: expo.inOut (timing seco y agresivo). Los
+ * segmentos pueden sobreescribirlo con la propiedad `easing`.
  */
-const easeFn = gsap.parseEase("expo.inOut");
+const _defaultEase = gsap.parseEase("expo.inOut");
+const _easeCache: Record<string, (t: number) => number> = {
+  "expo.out": gsap.parseEase("expo.out"),
+};
+
+function getEase(easing: string | undefined): (t: number) => number {
+  if (!easing) return _defaultEase;
+  if (!_easeCache[easing]) {
+    _easeCache[easing] = gsap.parseEase(easing);
+  }
+  return _easeCache[easing];
+}
 
 // ---------------------------------------------------------------------------
-// Vectores y colores reutilizables (se mutan en cada frame para
-// evitar allocs de GC dentro del render loop de R3F).
+// Vectores reutilizables (se mutan en cada frame para evitar allocs).
 // ---------------------------------------------------------------------------
 const _posFrom = new THREE.Vector3();
 const _posTo = new THREE.Vector3();
@@ -43,9 +53,6 @@ export function useCameraAnimation() {
     }
 
     // Progreso local dentro del tramo, con easing aplicado.
-    // Si la fase tiene holdFraction > 0, la interpolación se comprime
-    // en los primeros (1 - holdFraction) del tramo; el resto del
-    // tramo la cámara se mantiene fija en su encuadre de destino.
     const range = segment.scrollEnd - segment.scrollStart;
     const localRaw = range > 0 ? (p - segment.scrollStart) / range : 0;
     const localClamped = Math.max(0, Math.min(1, localRaw));
@@ -56,6 +63,8 @@ export function useCameraAnimation() {
       transitFraction > 0
         ? Math.max(0, Math.min(1, localClamped / transitFraction))
         : 1;
+
+    const easeFn = getEase(segment.easing);
     const t = easeFn(transitProgress);
 
     // Interpolar posición y lookAt con Vector3.lerpVectors.
