@@ -21,7 +21,7 @@ export default function Scene() {
       gl={{
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.2,
+        toneMappingExposure: 0.85,
       }}
     >
       {/* Color de fondo inicial (mutado dinámicamente por useBackgroundColor). */}
@@ -32,7 +32,7 @@ export default function Scene() {
       <Environment
         preset="studio"
         background={false}
-        environmentIntensity={0.6}
+        environmentIntensity={0.3}
       />
 
       <Lighting />
@@ -48,9 +48,9 @@ export default function Scene() {
           más intensos (cromados, bordes metálicos), no toda la imagen. */}
       <EffectComposer>
         <Bloom
-          luminanceThreshold={0.85}
+          luminanceThreshold={0.92}
           luminanceSmoothing={0.3}
-          intensity={0.4}
+          intensity={0.15}
         />
       </EffectComposer>
     </Canvas>

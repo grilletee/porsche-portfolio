@@ -5,20 +5,19 @@ export default function Lighting() {
       <ambientLight intensity={0.12} />
 
       {/* Key light: luz principal dura desde lateral-alto.
-          Intensidad x1.6 respecto al Sprint 1 para compensar
-          el tone mapping ACES que oscurece las altas luces. */}
+          Ajustada a 70% del valor del Sprint 5. */}
       <directionalLight
         position={[6, 8, 4]}
-        intensity={4}
+        intensity={2.8}
         color="#ffffff"
         castShadow
       />
 
       {/* Rim / contorno: luz azulada detrás del coche para separar
-          la silueta del fondo negro. x1.4 sobre el valor original. */}
+          la silueta del fondo negro. Ajustada a 65% del Sprint 5. */}
       <spotLight
         position={[-5, 4, -6]}
-        intensity={5.6}
+        intensity={3.64}
         angle={0.5}
         penumbra={0.4}
         color="#8fb4ff"

@@ -24,9 +24,10 @@ function CameraLight() {
   return (
     <pointLight
       ref={lightRef}
-      intensity={2}
-      distance={8}
+      intensity={1.1}
+      distance={5}
       color="#ffffff"
+      castShadow={false}
     />
   );
 }
