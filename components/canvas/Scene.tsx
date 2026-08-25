@@ -13,7 +13,11 @@ export default function Scene() {
       dpr={[1, 1.5]}
       camera={{ position: [5, 2.2, 6], fov: 40 }}
       style={{
-        position: "fixed",
+        // Sprint 8: sticky en vez de fixed — el Canvas se queda pegado
+        // a la pantalla mientras se scrollea dentro del contenedor
+        // #scroll-track (700vh) y se libera al superarlo, dejando paso
+        // a las secciones HTML posteriores.
+        position: "sticky",
         top: 0,
         left: 0,
         width: "100vw",

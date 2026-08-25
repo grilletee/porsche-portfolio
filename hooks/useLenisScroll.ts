@@ -5,6 +5,7 @@ import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useScrollStore } from "@/store/useScrollStore";
+import { getScrollTrackBounds } from "@/lib/scrollTrack";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,13 +26,16 @@ export function useLenisScroll() {
     gsap.ticker.lagSmoothing(0);
 
     // Actualizar el store con el progreso de scroll (0 a 1).
+    // Sprint 8: el progreso se calcula SOLO contra el recorrido 3D
+    // (el contenedor del Canvas sticky), no contra el documento entero
+    // — así no se diluye con las secciones HTML que van después.
     const updateProgress = () => {
       const scrollY = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
-      const maxScroll = docHeight - windowHeight;
-      const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
-      setScrollProgress(progress);
+      const { top, height } = getScrollTrackBounds();
+      const scrollable = height - windowHeight;
+      const progress = scrollable > 0 ? (scrollY - top) / scrollable : 0;
+      setScrollProgress(Math.min(1, Math.max(0, progress)));
     };
 
     // Escuchar el evento scroll nativo para calcular progreso.

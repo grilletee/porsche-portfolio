@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useScrollStore } from "@/store/useScrollStore";
+import { getScrollTrackBounds } from "@/lib/scrollTrack";
 import { CAMERA_PHASES } from "@/lib/scrollPhases";
 import { getTextRevealStateStaggered, getTextRevealState } from "@/lib/textReveal";
 import type { ScrollPhase } from "@/lib/scrollPhases";
@@ -140,6 +141,13 @@ const OVERLAY_STYLE: React.CSSProperties = {
   zIndex: 10, pointerEvents: "none",
 };
 
+// Wrapper de los bloques de fase: fade out cuando el usuario supera
+// el recorrido 3D y el Canvas sticky se suelta (Sprint 8).
+const BLOCKS_WRAPPER_STYLE: React.CSSProperties = {
+  position: "absolute", inset: 0,
+  transition: "opacity 0.3s ease-out",
+};
+
 const BLOCK_CONTAINER_STYLE: React.CSSProperties = {
   position: "absolute", top: 0, height: "100vh",
   display: "flex", alignItems: "center", padding: "0 8vw",
@@ -208,6 +216,7 @@ const CTA_CONTAINER_STYLE: React.CSSProperties = {
   position: "fixed", bottom: 0, left: 0, width: "100vw",
   zIndex: 11, pointerEvents: "none",
   display: "flex", justifyContent: "center", padding: "0 8vw 10vh",
+  transition: "opacity 0.3s ease-out",
 };
 
 const CTA_WRAPPER_STYLE: React.CSSProperties = {
@@ -255,6 +264,10 @@ export default function ContentOverlay() {
   // Indicador de disponibilidad
   const availRef = useRef<HTMLDivElement>(null);
 
+  // Wrappers para el fade al salir del recorrido 3D (Sprint 8)
+  const blocksWrapperRef = useRef<HTMLDivElement>(null);
+  const ctaWrapperRef = useRef<HTMLDivElement>(null);
+
   // ------------------------------------------------------------------
   // Suscripción continua
   // ------------------------------------------------------------------
@@ -287,7 +300,34 @@ export default function ContentOverlay() {
       availRef.current.style.opacity = p < CAMERA_PHASES.hero.start ? "0" : "1";
     }
 
-    return unsub;
+    // Fade del overlay al superar el recorrido 3D: cuando el sticky se
+    // suelta (scrollY > bottom del track - viewport), los bloques de
+    // fase y el CTA desaparecen para no tapar las secciones HTML de
+    // abajo. Se escucha el scroll nativo porque scrollProgress queda
+    // clavado en 1 y el store ya no emite cambios.
+    let lastPastTrack = false;
+    const applyTrackFade = () => {
+      const { bottom } = getScrollTrackBounds();
+      const pastTrack = window.scrollY > bottom - window.innerHeight;
+      if (pastTrack !== lastPastTrack) {
+        lastPastTrack = pastTrack;
+        if (blocksWrapperRef.current) {
+          blocksWrapperRef.current.style.opacity = pastTrack ? "0" : "1";
+        }
+        if (ctaWrapperRef.current) {
+          ctaWrapperRef.current.style.opacity = pastTrack ? "0" : "1";
+        }
+      }
+    };
+    applyTrackFade();
+    window.addEventListener("scroll", applyTrackFade, { passive: true });
+    window.addEventListener("resize", applyTrackFade);
+
+    return () => {
+      unsub();
+      window.removeEventListener("scroll", applyTrackFade);
+      window.removeEventListener("resize", applyTrackFade);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -307,51 +347,53 @@ export default function ContentOverlay() {
         <span style={AVAIL_TEXT_STYLE}>Disponible</span>
       </div>
 
-      {/* Bloques de fase */}
-      {BLOCK_KEYS.map((key) => {
-        const { content } = BLOCKS[key];
-        const isLeft = content.side === "left";
+      {/* Bloques de fase (wrapper para fade al salir del track 3D) */}
+      <div ref={blocksWrapperRef} style={BLOCKS_WRAPPER_STYLE}>
+        {BLOCK_KEYS.map((key) => {
+          const { content } = BLOCKS[key];
+          const isLeft = content.side === "left";
 
-        return (
-          <div
-            key={key}
-            ref={blockRefs[key]}
-            style={{
-              ...BLOCK_CONTAINER_STYLE,
-              left: 0, right: 0,
-              justifyContent: isLeft ? "flex-start" : "flex-end",
-            }}
-          >
-            <div style={{ ...WRAPPER_STYLE, textAlign: isLeft ? "left" : "right" }}>
-              <p data-el="label" style={LABEL_STYLE}>{content.label}</p>
+          return (
+            <div
+              key={key}
+              ref={blockRefs[key]}
+              style={{
+                ...BLOCK_CONTAINER_STYLE,
+                left: 0, right: 0,
+                justifyContent: isLeft ? "flex-start" : "flex-end",
+              }}
+            >
+              <div style={{ ...WRAPPER_STYLE, textAlign: isLeft ? "left" : "right" }}>
+                <p data-el="label" style={LABEL_STYLE}>{content.label}</p>
 
-              <div
-                data-el="accent"
-                style={{
-                  ...ACCENT_LINE_STYLE,
-                  marginLeft: isLeft ? 0 : "auto",
-                  marginRight: isLeft ? "auto" : 0,
-                }}
-              />
+                <div
+                  data-el="accent"
+                  style={{
+                    ...ACCENT_LINE_STYLE,
+                    marginLeft: isLeft ? 0 : "auto",
+                    marginRight: isLeft ? "auto" : 0,
+                  }}
+                />
 
-              <h2 data-el="title" style={TITLE_STYLE}>{content.title}</h2>
-              <p data-el="body" style={BODY_STYLE}>{content.body}</p>
+                <h2 data-el="title" style={TITLE_STYLE}>{content.title}</h2>
+                <p data-el="body" style={BODY_STYLE}>{content.body}</p>
 
-              {/* Tags de stack */}
-              {content.tags && (
-                <div style={TAGS_ROW_STYLE}>
-                  {content.tags.map((tag) => (
-                    <span key={tag} data-el="tag" style={TAG_STYLE}>{tag}</span>
-                  ))}
-                </div>
-              )}
+                {/* Tags de stack */}
+                {content.tags && (
+                  <div style={TAGS_ROW_STYLE}>
+                    {content.tags.map((tag) => (
+                      <span key={tag} data-el="tag" style={TAG_STYLE}>{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
       {/* CTA final */}
-      <div style={CTA_CONTAINER_STYLE}>
+      <div ref={ctaWrapperRef} style={CTA_CONTAINER_STYLE}>
         <div style={CTA_WRAPPER_STYLE}>
           <h3 ref={ctaTitleRef} style={CTA_TITLE_STYLE}>
             ¿Hablamos?

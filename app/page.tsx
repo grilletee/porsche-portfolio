@@ -46,16 +46,28 @@ export default function Home() {
 
   return (
     <main>
-      {/* Canvas 3D: position fixed, cubre toda la pantalla (ver Scene.tsx). */}
-      <Scene />
+      {/* Recorrido 3D: contenedor de 700vh exactos (id usado por
+          lib/scrollTrack.ts para medir el progreso). El Canvas es
+          position: sticky — se pega a la pantalla mientras se scrollea
+          dentro de este contenedor y se libera al superarlo, dejando
+          paso a las secciones HTML de abajo. */}
+      <div
+        id="scroll-track"
+        style={{ position: "relative", height: "700vh" }}
+      >
+        {/* Canvas 3D (sticky, ver Scene.tsx). */}
+        <Scene />
 
-      {/* Contenido scrollable: 700vh de recorrido para la coreografía.
-          pointer-events: none para que no bloquee los eventos — en
-          el Sprint 5 se activará cuando añadamos overlays de contenido. */}
-      <div style={{ position: "relative", zIndex: 1, pointerEvents: "none" }}>
-        <div style={{ height: "700vh" }}>
-          {/* Bloques de debug cada 100vh — referencia visual, se
-              quitan cuando el contenido esté listo. */}
+        {/* Bloques de debug cada 100vh — referencia visual, se
+            quitan cuando el contenido esté listo. */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        >
           {Array.from({ length: 7 }).map((_, i) => (
             <div
               key={i}
@@ -72,9 +84,12 @@ export default function Home() {
           Se quita cuando se confirme que todo funciona. */}
       <DebugPanel />
 
-      {/* Sprint 5: overlays de texto sincronizados con las fases
-          de cámara (usa scrollPhases.ts como fuente única). */}
+      {/* Overlay 3D: textos sincronizados con las fases de cámara
+          (usa scrollPhases.ts como fuente única). */}
       <ContentOverlay />
+
+      {/* Secciones HTML posteriores — scroll normal, no ligadas a
+          scrollProgress (se añaden en Sprint 8B / 8C). */}
     </main>
   );
 }
