@@ -5,9 +5,9 @@
  * (cámara, fondo, vista explosionada, overlays de contenido) importan
  * sus rangos desde aquí para mantener consistencia y evitar duplicación.
  *
- * Sprint 7: fase "transicion" renombrada a "ia" y movida entre
- * frontend y explode. Cada fase conserva su ancho original del
- * Sprint 6 (solo cambia el orden). BG_TRANSITION anclado a la fase ia.
+ * Sprint 9B: fase "sobre-mi" insertada entre hero y backend. Las fases
+ * posteriores (backend, frontend, ia, explode) se reescalan
+ * proporcionalmente con new = sobreMiEnd + (old - heroEnd) × scale.
  */
 
 export interface ScrollPhase {
@@ -23,37 +23,44 @@ export interface ScrollPhase {
 }
 
 // ---------------------------------------------------------------------------
-// Reordenamiento (Sprint 7A): los anchos individuales no cambian respecto
-// al Sprint 6. Solo se permuta el orden:
-//   intro[0.06] hero[0.1128] backend[0.2256] frontend[0.3008] ia[0.1128] explode[0.1880]
-//   = 0.06 + 0.1128 + 0.2256 + 0.3008 + 0.1128 + 0.1880 = 1.0 ✓
+// Sprint 9B: heroEnd = 0.1728, sobreMiWidth = 0.07 → sobreMiEnd = 0.2428.
+// Scale = (1 - 0.2428) / (1 - 0.1728) = 0.7572 / 0.8272 ≈ 0.915377
+//
+// Orden: intro  hero  sobre-mi  backend  frontend  ia  explode
+// Ancho: 0.06  0.1128  0.07     0.2065   0.2753    0.1033  0.1721 = 1.0 ✓
 // ---------------------------------------------------------------------------
 
 /** Fases de la coreografía de cámara. */
 export const CAMERA_PHASES = {
   intro: { name: "intro", start: 0, end: 0.06, holdFraction: 0 },
   hero: { name: "hero", start: 0.06, end: 0.1728, holdFraction: 0 },
+  "sobre-mi": {
+    name: "sobre-mi",
+    start: 0.1728,
+    end: 0.2428,
+    holdFraction: 0,
+  },
   backend: {
     name: "backend",
-    start: 0.1728,
-    end: 0.3984,
+    start: 0.2428,
+    end: 0.4493,
     holdFraction: 0.35,
   },
   frontend: {
     name: "frontend",
-    start: 0.3984,
-    end: 0.6992,
+    start: 0.4493,
+    end: 0.7247,
     holdFraction: 0.35,
   },
   ia: {
     name: "ia",
-    start: 0.6992,
-    end: 0.812,
+    start: 0.7247,
+    end: 0.8279,
     holdFraction: 0,
   },
   explode: {
     name: "explode",
-    start: 0.812,
+    start: 0.8279,
     end: 1.0,
     holdFraction: 0.35,
   },

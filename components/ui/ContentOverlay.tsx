@@ -21,7 +21,7 @@ interface PhaseContent {
   tagline?: string;
 }
 
-type PhaseKey = "hero" | "backend" | "frontend" | "ia" | "explode";
+type PhaseKey = "hero" | "sobre-mi" | "backend" | "frontend" | "ia" | "explode";
 
 const BLOCKS: Record<
   PhaseKey,
@@ -38,9 +38,19 @@ const BLOCKS: Record<
     },
     phase: CAMERA_PHASES.hero,
   },
+  "sobre-mi": {
+    content: {
+      label: "SOBRE MÍ",
+      title: "Quién soy",
+      body:
+        "Estudio desarrollo de software y llevo tiempo construyendo proyectos que combinan backend robusto, hardware físico e inteligencia artificial. Me interesa la parte que no se ve: la lógica, los datos y los sistemas que hacen que todo funcione. Actualmente ampliando mi stack con React y profundizando en arquitecturas de agentes de IA.",
+      side: "left",
+    },
+    phase: CAMERA_PHASES["sobre-mi"],
+  },
   backend: {
     content: {
-      label: "02 — BACKEND",
+      label: "01 — BACKEND",
       title: "Arquitectura y Microservicios",
       body: "Desarrollo de CRM con Java, Spring Boot, Spring Security (JWT) y bases de datos relacionales en PostgreSQL.",
       side: "right",
@@ -50,7 +60,7 @@ const BLOCKS: Record<
   },
   frontend: {
     content: {
-      label: "03 — FRONTEND",
+      label: "02 — FRONTEND",
       title: "Ecosistema UI",
       body: "Construcción de interfaces reactivas con Angular usando Signals, React y Tailwind CSS.",
       side: "left",
@@ -60,7 +70,7 @@ const BLOCKS: Record<
   },
   ia: {
     content: {
-      label: "04 — INTELIGENCIA ARTIFICIAL",
+      label: "03 — INTELIGENCIA ARTIFICIAL",
       title: "Agentes e Inteligencia Aplicada",
       body: "Desarrollo de agentes de IA autónomos con memoria RAG (TCG Agent) y APIs de análisis inteligente con Google Gemini (CV Analyzer API), construidos en Python con FastAPI y bases de datos vectoriales.",
       side: "right",
@@ -70,7 +80,7 @@ const BLOCKS: Record<
   },
   explode: {
     content: {
-      label: "05 — HARDWARE",
+      label: "04 — HARDWARE",
       title: "Ingeniería Inteligente",
       body: "Top 4 Nacional Eco-Digithon. Integración de microcontroladores Arduino, sensores telemétricos, MQTT y Node.js.",
       side: "left",
@@ -261,6 +271,7 @@ const CTA_BUTTON_STYLE: React.CSSProperties = {
 // ---------------------------------------------------------------------------
 export default function ContentOverlay() {
   const heroRef = useRef<HTMLDivElement>(null!);
+  const sobreMiRef = useRef<HTMLDivElement>(null!);
   const backendRef = useRef<HTMLDivElement>(null!);
   const frontendRef = useRef<HTMLDivElement>(null!);
   const iaRef = useRef<HTMLDivElement>(null!);
@@ -268,6 +279,7 @@ export default function ContentOverlay() {
 
   const blockRefs: Record<PhaseKey, React.RefObject<HTMLDivElement>> = {
     hero: heroRef,
+    "sobre-mi": sobreMiRef,
     backend: backendRef,
     frontend: frontendRef,
     ia: iaRef,

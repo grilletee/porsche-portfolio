@@ -54,13 +54,25 @@ export const CAMERA_SEGMENTS: CameraSegment[] = [
     toLookAt: [0, 0.5, 0],
   },
   {
+    // Tramo 1.5 (Sprint 9B): Sobre mí — micro-paneo lateral sutil.
+    // La cámara permanece fija en la posición del Hero y solo gira
+    // unos grados hacia la derecha. El protagonismo lo lleva el texto.
+    scrollStart: CAMERA_PHASES["sobre-mi"].start,
+    scrollEnd: CAMERA_PHASES["sobre-mi"].end,
+    holdFraction: CAMERA_PHASES["sobre-mi"].holdFraction,
+    fromPosition: [5, 2.2, 6],
+    toPosition: [5, 2.2, 6],
+    fromLookAt: [0, 0.5, 0],
+    toLookAt: [0.35, 0.5, 0.25],
+  },
+  {
     // Tramo 2: Backend/motor — acercamiento agresivo a la zona trasera.
     scrollStart: CAMERA_PHASES.backend.start,
     scrollEnd: CAMERA_PHASES.backend.end,
     holdFraction: CAMERA_PHASES.backend.holdFraction,
     fromPosition: [5, 2.2, 6],
     toPosition: [1.5, 0.9, -3],
-    fromLookAt: [0, 0.5, 0],
+    fromLookAt: [0.35, 0.5, 0.25],
     toLookAt: [0, 0.7, -2.5],
   },
   {
