@@ -22,9 +22,12 @@ body {
 /* Sprint 11C: viewport dinámico (dvh) con fallback a vh — en móvil la
    barra de direcciones cambia la altura real disponible. dvh se
    reajusta automáticamente al colapsar/expandirse. */
+/* !important: el wrapper del Canvas de R3F lleva height: 100% inline,
+   que ganaría a la clase — con !important la altura dvh (fallback vh)
+   se impone y el sticky conserva su altura real de viewport. */
 .canvas-height {
-  height: 100vh;
-  height: 100dvh;
+  height: 100vh !important;
+  height: 100dvh !important;
 }
 
 .track-height {
