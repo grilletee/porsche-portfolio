@@ -1,14 +1,8 @@
 "use client";
 
 import Reveal from "./Reveal";
-import TechButton from "./TechButton";
-import {
-  BODY_STYLE,
-  LABEL_STYLE,
-  SECTION_PADDING,
-  TAG_STYLE,
-  TITLE_STYLE,
-} from "./sectionStyles";
+import TechCard from "./TechCard";
+import { LABEL_STYLE, SECTION_PADDING, TITLE_STYLE } from "./sectionStyles";
 
 // ---------------------------------------------------------------------------
 // Contenido (Sprint 11C): TCG Agent y CV Analyzer tienen su propia
@@ -53,32 +47,6 @@ const GRID_STYLE: React.CSSProperties = {
   marginTop: 48,
 };
 
-const CARD_STYLE: React.CSSProperties = {
-  border: "1px solid rgba(245, 245, 245, 0.12)",
-  borderRadius: 2,
-  padding: 28,
-  display: "flex",
-  flexDirection: "column",
-  gap: 12,
-  background: "rgba(255, 255, 255, 0.02)",
-  height: "100%",
-};
-
-const CARD_TITLE_STYLE: React.CSSProperties = {
-  fontFamily: "var(--font-space-grotesk), system-ui, sans-serif",
-  fontWeight: 700,
-  fontSize: "clamp(1.25rem, 2vw, 1.5rem)",
-  color: "#f5f5f5",
-  letterSpacing: "-0.02em",
-  margin: 0,
-};
-
-const TAGS_ROW_STYLE: React.CSSProperties = {
-  display: "flex",
-  gap: 8,
-  flexWrap: "wrap",
-};
-
 export default function ProjectsSection() {
   return (
     <section id="proyectos" style={{ background: "#050505" }}>
@@ -90,24 +58,14 @@ export default function ProjectsSection() {
 
         <div style={GRID_STYLE}>
           {PROJECTS.map((project, i) => (
-            <Reveal key={project.title} delay={(i % 3) * 0.08}>
-              <div style={CARD_STYLE}>
-                <h3 style={CARD_TITLE_STYLE}>{project.title}</h3>
-                <p style={{ ...BODY_STYLE, fontSize: "0.95rem", flex: 1 }}>
-                  {project.description}
-                </p>
-                <div style={TAGS_ROW_STYLE}>
-                  {project.tags.map((tag) => (
-                    <span key={tag} style={TAG_STYLE}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div>
-                  <TechButton href={project.href}>Ver repositorio</TechButton>
-                </div>
-              </div>
-            </Reveal>
+            <TechCard
+              key={project.title}
+              index={i}
+              title={project.title}
+              description={project.description}
+              tags={project.tags}
+              href={project.href}
+            />
           ))}
         </div>
       </div>

@@ -1,13 +1,8 @@
 "use client";
 
 import Reveal from "./Reveal";
-import TechButton from "./TechButton";
-import {
-  BODY_STYLE,
-  LABEL_STYLE,
-  SECTION_PADDING,
-  TITLE_STYLE,
-} from "./sectionStyles";
+import TechCard from "./TechCard";
+import { LABEL_STYLE, SECTION_PADDING, TITLE_STYLE } from "./sectionStyles";
 
 // ---------------------------------------------------------------------------
 // Contenido (Sprint 8B): ampliación de la fase "ia" del recorrido 3D.
@@ -27,22 +22,11 @@ const PROJECTS = [
   },
 ];
 
-const PROJECT_TITLE_STYLE: React.CSSProperties = {
-  fontFamily: "var(--font-space-grotesk), system-ui, sans-serif",
-  fontWeight: 700,
-  fontSize: "clamp(1.25rem, 2vw, 1.5rem)",
-  color: "#f5f5f5",
-  letterSpacing: "-0.02em",
-  margin: 0,
-};
-
-const PROJECT_BLOCK_STYLE: React.CSSProperties = {
-  borderLeft: "2px solid rgba(255, 59, 48, 0.6)",
-  paddingLeft: 24,
-  marginTop: 40,
+const PROJECTS_LIST_STYLE: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  gap: 12,
+  gap: 24,
+  marginTop: 48,
 };
 
 export default function AISection() {
@@ -54,17 +38,18 @@ export default function AISection() {
           <h2 style={TITLE_STYLE}>Agentes e IA Aplicada</h2>
         </Reveal>
 
-        {PROJECTS.map((project, i) => (
-          <Reveal key={project.title} delay={0.1 + i * 0.1}>
-            <div style={PROJECT_BLOCK_STYLE}>
-              <h3 style={PROJECT_TITLE_STYLE}>{project.title}</h3>
-              <p style={{ ...BODY_STYLE, maxWidth: "60ch" }}>{project.description}</p>
-              <div>
-                <TechButton href={project.href}>Ver repositorio</TechButton>
-              </div>
-            </div>
-          </Reveal>
-        ))}
+        <div style={PROJECTS_LIST_STYLE}>
+          {PROJECTS.map((project, i) => (
+            <TechCard
+              key={project.title}
+              index={i}
+              title={project.title}
+              description={project.description}
+              href={project.href}
+              wide
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
