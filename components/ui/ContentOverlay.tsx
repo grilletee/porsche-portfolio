@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useScrollStore } from "@/store/useScrollStore";
 import { getScrollTrackBounds } from "@/lib/scrollTrack";
 import { CAMERA_PHASES } from "@/lib/scrollPhases";
-import { getTextRevealStateStaggered, getTextRevealState } from "@/lib/textReveal";
+import { getTextRevealStateStaggered } from "@/lib/textReveal";
 import type { ScrollPhase } from "@/lib/scrollPhases";
 
 // ---------------------------------------------------------------------------
@@ -147,11 +147,6 @@ function destructure(s: { opacity: number; translateY: number }): [number, numbe
 }
 
 // ---------------------------------------------------------------------------
-// CTA en la fase explode (scroll > 0.92)
-// ---------------------------------------------------------------------------
-const CTA_PHASE: ScrollPhase = { name: "cta", start: 0.92, end: 1.0 };
-
-// ---------------------------------------------------------------------------
 // Estilos
 // ---------------------------------------------------------------------------
 const OVERLAY_STYLE: React.CSSProperties = {
@@ -238,34 +233,6 @@ const AVAIL_TEXT_STYLE: React.CSSProperties = {
   letterSpacing: "0.1em", textTransform: "uppercase", color: "#f5f5f5",
 };
 
-// ---- CTA final ----
-const CTA_CONTAINER_STYLE: React.CSSProperties = {
-  position: "fixed", bottom: 0, left: 0, width: "100vw",
-  zIndex: 11, pointerEvents: "none",
-  display: "flex", justifyContent: "center", padding: "0 8vw 10vh",
-  transition: "opacity 0.3s ease-out",
-};
-
-const CTA_WRAPPER_STYLE: React.CSSProperties = {
-  textAlign: "center", maxWidth: 420,
-  textShadow: "0 1px 8px rgba(0,0,0,0.6)",
-};
-
-const CTA_TITLE_STYLE: React.CSSProperties = {
-  margin: 0, fontFamily: "var(--font-space-grotesk), system-ui, sans-serif",
-  fontWeight: 700, fontSize: "clamp(2rem, 4vw, 3.5rem)",
-  color: "#f5f5f5", lineHeight: 1.1, opacity: 0,
-};
-
-const CTA_BUTTON_STYLE: React.CSSProperties = {
-  display: "inline-block", marginTop: 16,
-  padding: "14px 36px", background: "#f5f5f5", color: "#050505",
-  fontFamily: "system-ui", fontSize: "1rem", fontWeight: 600,
-  letterSpacing: "0.03em", textDecoration: "none",
-  borderRadius: 2, opacity: 0, pointerEvents: "auto",
-  transition: "opacity 0.15s",
-};
-
 // ---------------------------------------------------------------------------
 // Componente
 // ---------------------------------------------------------------------------
@@ -286,16 +253,11 @@ export default function ContentOverlay() {
     explode: explodeRef,
   };
 
-  // CTA refs
-  const ctaTitleRef = useRef<HTMLHeadingElement>(null);
-  const ctaButtonRef = useRef<HTMLAnchorElement>(null);
-
   // Indicador de disponibilidad
   const availRef = useRef<HTMLDivElement>(null);
 
-  // Wrappers para el fade al salir del recorrido 3D (Sprint 8)
+  // Wrapper para el fade al salir del recorrido 3D (Sprint 8)
   const blocksWrapperRef = useRef<HTMLDivElement>(null);
-  const ctaWrapperRef = useRef<HTMLDivElement>(null);
 
   // ------------------------------------------------------------------
   // Suscripción continua
@@ -308,12 +270,6 @@ export default function ContentOverlay() {
       for (const key of BLOCK_KEYS) {
         updateBlock(blockRefs[key].current, p, BLOCKS[key].phase);
       }
-
-      // CTA final (aparece al final, scroll > 0.92)
-      const ctaTitleState = getTextRevealStateStaggered(p, CTA_PHASE, 0);
-      const ctaBtnState = getTextRevealStateStaggered(p, CTA_PHASE, 0.003);
-      applyReveal(ctaTitleRef.current, ctaTitleState.opacity, ctaTitleState.translateY);
-      applyReveal(ctaButtonRef.current, ctaBtnState.opacity, ctaBtnState.translateY);
 
       // Indicador de disponibilidad: visible desde hero en adelante
       if (availRef.current) {
@@ -342,17 +298,6 @@ export default function ContentOverlay() {
         lastPastTrack = pastTrack;
         if (blocksWrapperRef.current) {
           blocksWrapperRef.current.style.opacity = pastTrack ? "0" : "1";
-        }
-        if (ctaWrapperRef.current) {
-          ctaWrapperRef.current.style.opacity = pastTrack ? "0" : "1";
-        }
-        // Crítico (Sprint 10A): el botón de mailto del CTA fijo quedaba
-        // invisible (opacity 0) pero seguía capturando clics sobre el
-        // footer (p. ej. el botón de GitHub, que queda justo debajo en
-        // pantalla). Al soltar el track se desactivan sus pointer-events;
-        // al volver al recorrido 3D se reactivan.
-        if (ctaButtonRef.current) {
-          ctaButtonRef.current.style.pointerEvents = pastTrack ? "none" : "auto";
         }
       }
     };
@@ -434,24 +379,6 @@ export default function ContentOverlay() {
         })}
       </div>
 
-      {/* CTA final */}
-      <div ref={ctaWrapperRef} style={CTA_CONTAINER_STYLE}>
-        <div style={CTA_WRAPPER_STYLE}>
-          <h3 ref={ctaTitleRef} style={CTA_TITLE_STYLE}>
-            ¿Hablamos?
-          </h3>
-          <a
-            ref={ctaButtonRef}
-            href="mailto:grillete07@gmail.com"
-            style={{
-              ...CTA_BUTTON_STYLE,
-              display: "inline-block",
-            }}
-          >
-            Contrátame
-          </a>
-        </div>
-      </div>
     </div>
   );
 }
