@@ -11,7 +11,8 @@ import {
 } from "./sectionStyles";
 
 // ---------------------------------------------------------------------------
-// Contenido (Sprint 8B): grid con TODOS los proyectos del portfolio.
+// Contenido (Sprint 11C): TCG Agent y CV Analyzer tienen su propia
+// sección dedicada (AISection) — el grid queda con 3 proyectos.
 // ---------------------------------------------------------------------------
 interface ProjectCard {
   title: string;
@@ -36,20 +37,6 @@ const PROJECTS: ProjectCard[] = [
     href: "https://github.com/GreenCampusNebrija/green-campus-arduino",
   },
   {
-    title: "TCG Agent",
-    description:
-      "Agente de IA autónomo por línea de comandos con memoria RAG, conectado a la API de Groq, búsqueda web en vivo y modelos de lenguaje locales.",
-    tags: ["Python", "RAG", "Groq", "LLM"],
-    href: "https://github.com/grilletee/pokemon-tcg-ai-agent",
-  },
-  {
-    title: "CV Analyzer API",
-    description:
-      "API de análisis inteligente de currículums en Python con FastAPI, Google Gemini 2.5 Flash, validación con Pydantic v2 y procesamiento de PDF.",
-    tags: ["Python", "FastAPI", "Gemini"],
-    href: "https://github.com/grilletee/cv-analyzer",
-  },
-  {
     title: "Python Automation Tools",
     description: "Colección de herramientas de automatización en Python.",
     tags: ["Python", "Automation"],
@@ -57,9 +44,11 @@ const PROJECTS: ProjectCard[] = [
   },
 ];
 
+// Grid pensado para 3 tarjetas: 3 columnas en desktop, 2 en tablet,
+// 1 en móvil (auto-fit con min-width responsive).
 const GRID_STYLE: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
   gap: 24,
   marginTop: 48,
 };
