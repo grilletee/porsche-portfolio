@@ -13,10 +13,16 @@ export function useLenisScroll() {
   const setScrollProgress = useScrollStore((s) => s.setScrollProgress);
 
   useEffect(() => {
+    // Sprint 11D: con prefers-reduced-motion el desplazamiento es
+    // menos intenso (lerp más alto = más suavizado, menos brusco).
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
     const lenis = new Lenis({
       // Suavizado: lerp bajo = respuesta seca, rápida (consistente
       // con la visión de curvas agresivas tipo expo del proyecto).
-      lerp: 0.08,
+      lerp: prefersReducedMotion ? 0.15 : 0.08,
       smoothWheel: true,
       // Sprint 11B: en táctil el scroll nativo del navegador se siente
       // mejor que uno interpolado artificialmente. En esta versión de

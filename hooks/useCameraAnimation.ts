@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { gsap } from "gsap";
 import { useScrollStore } from "@/store/useScrollStore";
 import { CAMERA_SEGMENTS } from "@/lib/cameraPath";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 /**
  * Easing por defecto: expo.inOut (timing seco y agresivo). Los
@@ -40,6 +41,11 @@ export function useCameraAnimation() {
   const scrollProgress = useScrollStore((s) => s.scrollProgress);
   const { camera } = useThree();
 
+  // Sprint 11D: con prefers-reduced-motion la cámara usa una curva
+  // mucho más suave (power1.inOut) en lugar de expo.inOut/out — se
+  // mantiene el movimiento, solo se reduce su brusquedad.
+  const reducedMotion = usePrefersReducedMotion();
+
   useFrame(() => {
     const p = scrollProgress;
 
@@ -64,7 +70,8 @@ export function useCameraAnimation() {
         ? Math.max(0, Math.min(1, localClamped / transitFraction))
         : 1;
 
-    const easeFn = getEase(segment.easing);
+    const easeName = reducedMotion ? "power1.inOut" : segment.easing;
+    const easeFn = getEase(easeName);
     const t = easeFn(transitProgress);
 
     // Interpolar posición y lookAt con Vector3.lerpVectors.
