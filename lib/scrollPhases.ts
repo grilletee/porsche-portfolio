@@ -10,8 +10,12 @@
  * anchos). Cada fase mantiene su holdFraction, que es una proporción
  * RELATIVA a su propio ancho y no se ve afectada por este cambio.
  *
+ * Sprint 12: sobre-mi ampliada (+0.04, tomado de explode) y con
+ * holdFraction 0.6 + holdEntryDelay 0.05 para que el texto aparezca
+ * un instante después de asentar la cámara en el plano frontal.
+ *
  * Orden: intro  hero  sobre-mi  backend  frontend  ia  explode
- * Ancho: 0.06   0.09  0.11      0.19     0.19      0.14 0.22 = 1.00 ✓
+ * Ancho: 0.06   0.09  0.15      0.19     0.19      0.14 0.18 = 1.00 ✓
  */
 
 export interface ScrollPhase {
@@ -24,6 +28,13 @@ export interface ScrollPhase {
    * no durante el tránsito.
    */
   holdFraction?: number;
+  /**
+   * Retardo extra (en unidades locales 0-1 del rango) para arrancar
+   * la ENTRADA del texto después de holdStart: un pequeño respiro
+   * tras asentar la cámara antes de que aparezca el texto. Solo se
+   * usa en fases concretas (sobre-mi); las demás no lo definen.
+   */
+  holdEntryDelay?: number;
 }
 
 /** Fases de la coreografía de cámara. */
@@ -33,30 +44,35 @@ export const CAMERA_PHASES = {
   "sobre-mi": {
     name: "sobre-mi",
     start: 0.15,
-    end: 0.26,
-    holdFraction: 0,
+    end: 0.30,
+    // Sprint 12: hold 0.6 → la cámara completa su giro al frontal en
+    // el 40% inicial del tramo y queda en reposo el 60% restante.
+    holdFraction: 0.6,
+    // Sprint 12: el texto espera 0.05 de progreso local tras asentarse
+    // la cámara antes de empezar a aparecer.
+    holdEntryDelay: 0.05,
   },
   backend: {
     name: "backend",
-    start: 0.26,
-    end: 0.45,
+    start: 0.30,
+    end: 0.49,
     holdFraction: 0.35,
   },
   frontend: {
     name: "frontend",
-    start: 0.45,
-    end: 0.64,
+    start: 0.49,
+    end: 0.68,
     holdFraction: 0.35,
   },
   ia: {
     name: "ia",
-    start: 0.64,
-    end: 0.78,
+    start: 0.68,
+    end: 0.82,
     holdFraction: 0,
   },
   explode: {
     name: "explode",
-    start: 0.78,
+    start: 0.82,
     end: 1.0,
     holdFraction: 0.35,
   },

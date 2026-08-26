@@ -27,6 +27,11 @@ export interface PhaseRange {
   end: number;
   /** Fracción final del rango donde la cámara ya está asentada. */
   holdFraction?: number;
+  /**
+   * Retardo extra (unidades locales 0-1) para arrancar la entrada del
+   * texto después de holdStart. Solo lo define la fase sobre-mi.
+   */
+  holdEntryDelay?: number;
 }
 
 /** Easings cacheados una sola vez. */
@@ -66,17 +71,25 @@ export function getTextRevealState(
     // --- Modo hold: la ventana de texto está anclada al hold de cámara ---
     const holdStart = 1 - holdFraction;
 
-    // Antes del hold: cámara en tránsito, texto invisible.
-    if (local < holdStart) {
-      return { opacity: 0, translateY: 20 };
-    }
+    // Sprint 12: retardo específico de entrada (solo sobre-mi). El
+    // texto sigue invisible durante holdEntryDelay de progreso local
+    // tras asentarse la cámara — la salida sigue anclada al final
+    // del hold, sin cambios.
+    const entryDelay = phase.holdEntryDelay ?? 0;
+    const entryDelayHoldUnits = entryDelay / holdFraction;
 
     // Normalizar posición dentro del hold (0 al inicio del hold, 1 al final).
     const holdProgress = (local - holdStart) / holdFraction;
+    const entryProgress = holdProgress - entryDelayHoldUnits;
 
-    if (holdProgress < HOLD_ANIM_WIDTH) {
-      // Entrada dentro del hold.
-      const t = _easeOut(holdProgress / HOLD_ANIM_WIDTH);
+    // Antes del hold (+ retardo): cámara en tránsito o reposo sin texto.
+    if (entryProgress < 0) {
+      return { opacity: 0, translateY: 20 };
+    }
+
+    if (entryProgress < HOLD_ANIM_WIDTH) {
+      // Entrada dentro del hold (tras el retardo).
+      const t = _easeOut(entryProgress / HOLD_ANIM_WIDTH);
       return { opacity: t, translateY: 20 * (1 - t) };
     }
 
