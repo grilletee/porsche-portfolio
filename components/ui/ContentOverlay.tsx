@@ -149,8 +149,11 @@ function destructure(s: { opacity: number; translateY: number }): [number, numbe
 // ---------------------------------------------------------------------------
 // Estilos
 // ---------------------------------------------------------------------------
+// Altura en clase CSS (canvas-height): 100dvh con fallback a 100vh
+// (Sprint 11C) — el overlay debe cubrir exactamente lo mismo que el
+// Canvas en móvil, donde la barra de direcciones cambia la altura.
 const OVERLAY_STYLE: React.CSSProperties = {
-  position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+  position: "fixed", top: 0, left: 0, width: "100vw",
   zIndex: 10, pointerEvents: "none",
 };
 
@@ -162,8 +165,11 @@ const BLOCKS_WRAPPER_STYLE: React.CSSProperties = {
 };
 
 const BLOCK_CONTAINER_STYLE: React.CSSProperties = {
-  position: "absolute", top: 0, height: "100vh",
-  display: "flex", alignItems: "center", padding: "0 8vw",
+  position: "absolute", top: 0,
+  display: "flex", alignItems: "center",
+  // max(8vw, 20px): en pantallas muy estrechas el 8vw deja el texto
+  // pegado al borde — 20px es el mínimo garantizado (Sprint 11C).
+  padding: "0 max(8vw, 20px)",
 };
 
 const WRAPPER_STYLE: React.CSSProperties = {
@@ -317,7 +323,7 @@ export default function ContentOverlay() {
   // Render
   // ------------------------------------------------------------------
   return (
-    <div style={OVERLAY_STYLE}>
+    <div className="canvas-height" style={OVERLAY_STYLE}>
       {/* Indicador "Disponible" persistente (esquina superior derecha) */}
       <div
         ref={availRef}
@@ -339,6 +345,7 @@ export default function ContentOverlay() {
             <div
               key={key}
               ref={blockRefs[key]}
+              className="canvas-height"
               style={{
                 ...BLOCK_CONTAINER_STYLE,
                 left: 0, right: 0,

@@ -73,7 +73,7 @@ export default function Footer() {
       </Reveal>
 
       <Reveal delay={0.1}>
-        <div style={LINKS_ROW_STYLE}>
+        <div className="footer-links" style={LINKS_ROW_STYLE}>
           <a
             href="https://www.linkedin.com/in/guillermo-sanchez-gutierrez/"
             target="_blank"

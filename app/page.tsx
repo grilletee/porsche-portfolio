@@ -56,7 +56,8 @@ export default function Home() {
           paso a las secciones HTML de abajo. */}
       <div
         id="scroll-track"
-        style={{ position: "relative", height: "700vh" }}
+        className="track-height"
+        style={{ position: "relative" }}
       >
         {/* Canvas 3D (sticky, ver Scene.tsx). */}
         <Scene />

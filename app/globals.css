@@ -19,4 +19,26 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* Sprint 11C: viewport dinámico (dvh) con fallback a vh — en móvil la
+   barra de direcciones cambia la altura real disponible. dvh se
+   reajusta automáticamente al colapsar/expandirse. */
+.canvas-height {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.track-height {
+  height: 700vh;
+  height: 700dvh;
+}
+
+/* Sprint 11C: en pantallas estrechas los enlaces del footer se apilan
+   verticalmente en vez de apretarse en fila. */
+@media (max-width: 640px) {
+  .footer-links {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
 /* Sprint 2: scroll con Lenis + ScrollTrigger + zustand (ver hooks/useLenisScroll.ts). */
