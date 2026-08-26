@@ -12,6 +12,10 @@ body {
      Canvas 100vw sin crear un scroll container, que rompería el
      position: sticky del recorrido 3D (Sprint 8). */
   overflow-x: clip;
+  /* Sprint 11B: pan-y permite el scroll vertical nativo pero evita
+     que gestos horizontales accidentales interfieran al interactuar
+     cerca del Canvas (no hay controles 3D que los necesiten). */
+  touch-action: pan-y;
   font-family: system-ui, -apple-system, sans-serif;
 }
 

@@ -18,6 +18,10 @@ export function useLenisScroll() {
       // con la visión de curvas agresivas tipo expo del proyecto).
       lerp: 0.08,
       smoothWheel: true,
+      // Sprint 11B: en táctil el scroll nativo del navegador se siente
+      // mejor que uno interpolado artificialmente — Lenis recomienda
+      // smoothTouch: false (o muy sutil) en móvil.
+      smoothTouch: false,
     });
 
     // Sincronizar Lenis con GSAP ScrollTrigger.
