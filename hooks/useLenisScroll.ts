@@ -19,9 +19,11 @@ export function useLenisScroll() {
       lerp: 0.08,
       smoothWheel: true,
       // Sprint 11B: en táctil el scroll nativo del navegador se siente
-      // mejor que uno interpolado artificialmente — Lenis recomienda
-      // smoothTouch: false (o muy sutil) en móvil.
-      smoothTouch: false,
+      // mejor que uno interpolado artificialmente. En esta versión de
+      // Lenis (1.3.x) no existe smoothTouch: el touch ya es nativo por
+      // defecto (solo se suaviza la rueda con smoothWheel) y
+      // touchMultiplier: 1 lo deja sin amplificar.
+      touchMultiplier: 1,
     });
 
     // Sincronizar Lenis con GSAP ScrollTrigger.
