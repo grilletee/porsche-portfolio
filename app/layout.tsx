@@ -17,6 +17,7 @@ const jetbrainsMono = JetBrains_Mono({
 // SEO / metadata (Sprint 12C).
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.grillete.dev"),
+  themeColor: "#050505",
   title: "Guillermo Sánchez — Full Stack Developer, Backend & IoT",
   description:
     "Full Stack Developer con foco en backend, IoT e inteligencia artificial aplicada. Java, Spring Boot, Python, React, Arduino.",
