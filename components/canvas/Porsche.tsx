@@ -13,6 +13,11 @@ import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
+// gltfjsx 6.5.3 referencia GLTFAction sin definirlo (bug conocido).
+// Este archivo es auto-generado y no se importa en runtime; el alias
+// solo existe para que tsc/next build pasen.
+type GLTFAction = THREE.AnimationClip
+
 type GLTFResult = GLTF & {
   nodes: {
     TwiXeR_992_gt3rs_carbon_Wing_TwiXeR_992_plastic_mgl_060606FF001_0: THREE.Mesh
