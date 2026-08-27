@@ -223,10 +223,18 @@ const TAG_STYLE: React.CSSProperties = {
 
 // ---- Indicador "Disponible" persistente ----
 const AVAIL_INDICATOR_STYLE: React.CSSProperties = {
-  position: "fixed", top: 20, right: 24, zIndex: 11,
+  position: "fixed", zIndex: 11,
   display: "flex", alignItems: "center", gap: 8,
   opacity: 0.5, transition: "opacity 0.2s",
   pointerEvents: "auto",
+  // Sprint 12E: safe-area para que no quede bajo el notch / Dynamic
+  // Island en móviles con pantalla recortada.
+  top: "max(20px, env(safe-area-inset-top))",
+  right: "max(24px, env(safe-area-inset-right))",
+  // Área de toque ~44px sin desplazar el contenido visual (el padding
+  // crece la zona táctil y el margin negativo la compensa).
+  padding: "17px 0",
+  margin: "-17px 0",
 };
 
 const AVAIL_DOT_STYLE: React.CSSProperties = {

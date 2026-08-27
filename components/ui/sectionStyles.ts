@@ -55,7 +55,9 @@ export const TAG_STYLE: CSSProperties = {
 };
 
 export const OUTLINE_BUTTON_STYLE: CSSProperties = {
-  display: "inline-block",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
   fontFamily: "var(--font-jetbrains-mono), monospace",
   fontSize: "0.75rem",
   fontWeight: 500,
@@ -65,6 +67,9 @@ export const OUTLINE_BUTTON_STYLE: CSSProperties = {
   border: "1px solid rgba(245, 245, 245, 0.4)",
   background: "transparent",
   padding: "10px 18px",
+  // Sprint 12E: área de toque mínima de accesibilidad táctil (44px)
+  // en móvil — con 0.75rem de texto + padding 10px quedaba en ~36px.
+  minHeight: 44,
   borderRadius: 2,
   textDecoration: "none",
   transition: "background 0.2s, color 0.2s, border-color 0.2s",

@@ -11,7 +11,9 @@ import { BODY_STYLE, TITLE_STYLE } from "./sectionStyles";
 const FOOTER_STYLE: React.CSSProperties = {
   background: "#050505",
   borderTop: "1px solid rgba(245, 245, 245, 0.08)",
-  padding: "12vh 8vw 8vh",
+  // Sprint 12E: safe-area inferior para que la última línea no quede
+  // tapada por la barra de gestos en iPhone.
+  padding: "12vh 8vw calc(8vh + env(safe-area-inset-bottom))",
   textAlign: "center",
 };
 
@@ -25,6 +27,11 @@ const LINKS_ROW_STYLE: React.CSSProperties = {
 };
 
 const LINK_STYLE: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  // Sprint 12E: área de toque mínima de 44px (accesibilidad táctil).
+  minHeight: 44,
+  padding: "0 8px",
   fontFamily: "var(--font-jetbrains-mono), monospace",
   fontSize: "0.8rem",
   fontWeight: 500,
