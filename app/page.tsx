@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useLenisScroll } from "@/hooks/useLenisScroll";
 import ContentOverlay from "@/components/ui/ContentOverlay";
+import Loader from "@/components/ui/Loader";
 import AISection from "@/components/ui/AISection";
 import ProjectsSection from "@/components/ui/ProjectsSection";
 import Footer from "@/components/ui/Footer";
@@ -30,6 +31,10 @@ export default function Home() {
       >
         {/* Canvas 3D (sticky, ver Scene.tsx). */}
         <Scene />
+
+        {/* Loader de carga del modelo (Sprint 12B): overlay fixed con
+            el progreso real del .glb; se desmonta del DOM al terminar. */}
+        <Loader />
       </div>
 
       {/* Overlay 3D: textos sincronizados con las fases de cámara
