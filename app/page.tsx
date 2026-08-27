@@ -7,6 +7,7 @@ import Loader from "@/components/ui/Loader";
 import AISection from "@/components/ui/AISection";
 import ProjectsSection from "@/components/ui/ProjectsSection";
 import Footer from "@/components/ui/Footer";
+import ScrollCue from "@/components/ui/ScrollCue";
 
 // El Canvas de R3F usa APIs de navegador (WebGL) que no existen en el
 // servidor. Cargarlo con ssr:false evita errores de hidratación.
@@ -35,6 +36,7 @@ export default function Home() {
         {/* Loader de carga del modelo (Sprint 12B): overlay fixed con
             el progreso real del .glb; se desmonta del DOM al terminar. */}
         <Loader />
+        <ScrollCue />
       </div>
 
       {/* Overlay 3D: textos sincronizados con las fases de cámara
