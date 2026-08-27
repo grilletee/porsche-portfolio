@@ -1,47 +1,43 @@
-# Porsche Portfolio — Sprint 1 (fundación)
+# Porsche Portfolio
 
-Esto es la base del Sprint 1 escrita a mano, mientras Freebuff recupera cuota.
-Cuando vuelva Freebuff, puedes seguir desde el Sprint 2 directamente sobre
-este mismo proyecto — no hace falta rehacer nada.
+Portfolio interactivo de Guillermo Sánchez: un recorrido 3D por mi stack de desarrollo, desde backend e IoT hasta frontend e inteligencia artificial.
 
-## Pasos para dejarlo funcionando con TU modelo real
+![preview](./public/og-image.jpg)
 
-1. **Copia tus archivos reales** (los que ya generaste con gltfjsx):
-   - Tu `porsche-transformed.glb` → `public/models/porsche-transformed.glb`
-   - Tu `Porsche.tsx` real (el que generó gltfjsx) →
-     sustituye `components/canvas/Porsche.tsx` (este repo trae un
-     placeholder con una caja simple, bórralo y pon el tuyo)
+## Stack técnico
 
-2. **Instala dependencias:**
-   ```bash
-   npm install
-   ```
+- **Next.js** — estructura de aplicación, metadata SEO y convenciones de rutas.
+- **TypeScript** — tipado estático para mantener la aplicación segura y mantenible.
+- **React Three Fiber** — integración declarativa de Three.js con React para el recorrido 3D.
+- **drei** — helpers y componentes listos para iluminación, entorno y carga del modelo.
+- **GSAP + ScrollTrigger** — sincronización precisa de las animaciones con el desplazamiento.
+- **Lenis** — scroll suave y consistente entre dispositivos.
+- **Zustand** — estado ligero y centralizado para `scrollProgress` y calidad de renderizado.
 
-3. **Arranca en local:**
-   ```bash
-   npm run dev
-   ```
-   Abre http://localhost:3000
+## Arquitectura del scroll
 
-## Qué deberías ver
+`lib/scrollPhases.ts` es la fuente única de verdad para los rangos de cada fase del recorrido. La cámara, el modelo y el texto se calculan como funciones continuas de `scrollProgress`, en lugar de depender de animaciones disparadas por eventos aislados. Así, cualquier posición del scroll puede reconstruirse de forma determinista y el recorrido permanece sincronizado. Las secciones HTML posteriores se liberan cuando termina el track 3D.
 
-- Fondo negro casi puro (#050505)
-- El modelo (placeholder: una caja; con tu .glb real: el Porsche completo)
-  iluminado con contraste duro — zonas muy claras y sombras profundas,
-  no una iluminación plana ni un HDRI genérico
-- Un borde de luz azulada sutil separando la silueta del fondo (rim light)
-- Puedes orbitar con el ratón (OrbitControls) para inspeccionar el modelo
-  desde cualquier ángulo — esto es temporal, se quita en el Sprint 3
+## Cómo correrlo en local
 
-## Si tu Porsche.tsx real usa una ruta distinta al .glb
+```bash
+git clone <url-del-repositorio>
+cd <directorio-del-proyecto>
+npm install
+npm run dev
+```
 
-Abre tu `Porsche.tsx` generado y confirma que la línea `useGLTF(...)`
-apunta a `/models/porsche-transformed.glb` (con la barra inicial, así
-Next.js lo resuelve desde `/public`). Ajusta si gltfjsx usó otra ruta.
+Abre [http://localhost:3000](http://localhost:3000). El repositorio incluye `public/cv.pdf` y `public/og-image.jpg`; si trabajas con una copia que no los contiene, coloca esos archivos manualmente en esas rutas antes de iniciar la aplicación.
 
-## Siguiente paso
+## Créditos y licencias
 
-Cuando confirmes visualmente que esto funciona, el Sprint 2 añade:
-Lenis + GSAP ScrollTrigger + un store de Zustand con `scrollProgress`.
-Pide ese prompt cuando estés listo (a mí o a Freebuff, indistinto —
-el código es compatible con ambos).
+- Modelo 3D **“Porsche GT3 RS”** por [Black Snow](https://sketchfab.com/BlackSnow02), bajo licencia [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/). Fuente original: [Porsche GT3 RS en Sketchfab](https://sketchfab.com/3d-models/porsche-gt3-rs-e738eae819c34d19a31dd066c45e0f3d).
+- Las fuentes **JetBrains Mono** y **Space Grotesk** se cargan desde Google Fonts mediante `next/font` y permanecen sujetas a sus respectivas licencias de distribución.
+- El resto del código de este proyecto es propiedad de su autor, salvo las dependencias de terceros indicadas por sus propios avisos de licencia.
+
+## Autor
+
+**Guillermo Sánchez Gutiérrez**
+
+- [LinkedIn](https://www.linkedin.com/in/guillermo-sanchez-gutierrez/)
+- [GitHub](https://github.com/grilletee)
