@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
@@ -14,40 +14,71 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
-// SEO / metadata (Sprint 12C).
-export const metadata: Metadata = {
-  metadataBase: new URL("https://www.grillete.dev"),
+const SITE_URL = "https://www.grillete.dev";
+const TITLE = "Guillermo Sánchez — Desarrollador Full Stack | Backend, IoT e IA aplicada";
+const DESCRIPTION =
+  "Técnico Superior en DAM y alumno del Máster en IA y Big Data. Backend con Java y Spring Boot, IA aplicada con Python y FastAPI, e IoT con Arduino. Portfolio con proyectos y CV.";
+
+// SEO / metadata. themeColor vive en `viewport` desde Next 14 (en
+// `metadata` generaba un aviso en cada build).
+export const viewport: Viewport = {
   themeColor: "#050505",
-  title: "Guillermo Sánchez — Full Stack Developer, Backend & IoT",
-  description:
-    "Full Stack Developer con foco en backend, IoT e inteligencia artificial aplicada. Java, Spring Boot, Python, React, Arduino.",
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
   keywords: [
-    "full stack developer",
+    "desarrollador full stack",
     "backend developer",
+    "Spring Boot",
+    "Java",
+    "Python",
+    "FastAPI",
     "IoT",
     "Arduino",
-    "Spring Boot",
-    "React",
-    "inteligencia artificial",
+    "inteligencia artificial aplicada",
     "portfolio desarrollador",
   ],
   openGraph: {
-    title: "Guillermo Sánchez — Full Stack Developer, Backend & IoT",
-    description:
-      "Full Stack Developer con foco en backend, IoT e inteligencia artificial aplicada. Java, Spring Boot, Python, React, Arduino.",
-    url: "https://www.grillete.dev",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
     siteName: "Guillermo Sánchez — Portfolio",
-    images: ["/og-image.jpg"],
+    images: [
+      {
+        url: "/og-image.jpg",
+        alt: "Portfolio de Guillermo Sánchez: recorrido 3D por su stack de desarrollo",
+      },
+    ],
     locale: "es_ES",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Guillermo Sánchez — Full Stack Developer, Backend & IoT",
-    description:
-      "Full Stack Developer con foco en backend, IoT e inteligencia artificial aplicada. Java, Spring Boot, Python, React, Arduino.",
+    title: TITLE,
+    description: DESCRIPTION,
     images: ["/og-image.jpg"],
   },
+};
+
+// Datos estructurados (schema.org/Person): solo información que ya es
+// pública en el propio portfolio y en el CV.
+const PERSON_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Guillermo Sánchez Gutiérrez",
+  alternateName: "Grillete",
+  url: SITE_URL,
+  jobTitle: "Desarrollador Full Stack",
+  address: { "@type": "PostalAddress", addressLocality: "Madrid", addressCountry: "ES" },
+  sameAs: [
+    "https://github.com/grilletee",
+    "https://www.linkedin.com/in/guillermo-sanchez-gutierrez/",
+  ],
+  knowsAbout: ["Java", "Spring Boot", "Python", "FastAPI", "Angular", "React", "Arduino", "IoT"],
 };
 
 export default function RootLayout({
@@ -60,7 +91,16 @@ export default function RootLayout({
       lang="es"
       className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(PERSON_JSON_LD) }}
+        />
+        <a href="#proyectos" className="skip-link">
+          Saltar a los proyectos
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

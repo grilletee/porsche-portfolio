@@ -2,23 +2,44 @@
 
 import Reveal from "./Reveal";
 import TechCard from "./TechCard";
+import type { CardLink } from "./TechCard";
 import { LABEL_STYLE, SECTION_PADDING, TITLE_STYLE } from "./sectionStyles";
 
 // ---------------------------------------------------------------------------
-// Contenido (Sprint 8B): ampliación de la fase "ia" del recorrido 3D.
+// Contenido: descripciones contrastadas con los README de cada repositorio
+// (auditoría). Ambos son proyectos individuales (un único contribuidor).
 // ---------------------------------------------------------------------------
-const PROJECTS = [
+interface AIProject {
+  title: string;
+  kind: string;
+  description: string;
+  tags: string[];
+  links: CardLink[];
+  note?: string;
+}
+
+const PROJECTS: AIProject[] = [
   {
-    title: "TCG Agent",
+    title: "Agente de IA con herramientas y memoria RAG",
+    kind: "Proyecto individual",
     description:
-      "Agente de IA autónomo por línea de comandos con memoria RAG (embeddings con sentence-transformers en base de datos vectorial), conectado a la API de Groq, búsqueda web en vivo vía DuckDuckGo, y modelos de lenguaje locales como Llama 3.2 3B Instruct.",
-    href: "https://github.com/grilletee/pokemon-tcg-ai-agent",
+      "Agente de IA basado en Gemini 2.5 Flash que combina tool calling con herramientas externas (una API de datos y búsqueda web), recuperación contextual mediante RAG con ChromaDB y sentence-transformers, y una API REST desarrollada con FastAPI. Un bucle de hasta cinco rondas permite al modelo invocar las herramientas necesarias antes de responder, con sesiones independientes y reintentos con backoff ante errores del servicio.",
+    tags: ["Python", "FastAPI", "Gemini", "Tool calling", "RAG", "ChromaDB"],
+    links: [
+      { label: "Ver repositorio", href: "https://github.com/grilletee/pokemon-tcg-ai-agent" },
+    ],
   },
   {
     title: "CV Analyzer API",
+    kind: "Proyecto individual",
     description:
-      "API de análisis inteligente de currículums construida en Python 3.13 con FastAPI, usando Google Gemini 2.5 Flash, validación con Pydantic v2 y procesamiento de PDF con pypdf. Autenticación vía API Key, CI/CD automático con GitHub y Render.",
-    href: "https://github.com/grilletee/cv-analyzer",
+      "API REST que analiza currículums (texto o PDF) con Google Gemini 2.5 Flash y los compara con una oferta de trabajo, devolviendo JSON validado con Pydantic v2. Autenticación por API Key, tests con pytest sin consumir la API y despliegue continuo en Render.",
+    tags: ["Python 3.13", "FastAPI", "Gemini", "Pydantic", "pytest"],
+    links: [
+      { label: "Ver repositorio", href: "https://github.com/grilletee/cv-analyzer" },
+      { label: "Documentación API", href: "https://cv-analyzer-37jx.onrender.com/docs" },
+    ],
+    note: "La demo está en el plan gratuito de Render: la primera petición puede tardar ~50 s en despertar.",
   },
 ];
 
@@ -35,19 +56,12 @@ export default function AISection() {
       <div style={SECTION_PADDING}>
         <Reveal>
           <p style={LABEL_STYLE}>INTELIGENCIA ARTIFICIAL</p>
-          <h2 style={TITLE_STYLE}>Agentes e IA Aplicada</h2>
+          <h2 style={TITLE_STYLE}>Proyectos de IA</h2>
         </Reveal>
 
         <div style={PROJECTS_LIST_STYLE}>
           {PROJECTS.map((project, i) => (
-            <TechCard
-              key={project.title}
-              index={i}
-              title={project.title}
-              description={project.description}
-              href={project.href}
-              wide
-            />
+            <TechCard key={project.title} index={i} wide {...project} />
           ))}
         </div>
       </div>

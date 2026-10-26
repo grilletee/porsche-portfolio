@@ -29,12 +29,12 @@ const BLOCKS: Record<
 > = {
   hero: {
     content: {
-      label: "HERO",
+      label: "DESARROLLADOR DE SOFTWARE",
       title: "Guillermo Sánchez",
-      body: "Full Stack Developer",
+      body: "Desarrollador Full Stack",
       side: "left",
       tagline:
-        "Construyo aplicaciones que van del sensor al servidor y del servidor a la pantalla. Del hardware con Arduino hasta agentes de IA.",
+        "Backend con Java y Spring Boot, IA aplicada con Python y FastAPI, e IoT con Arduino. Técnico Superior en DAM y alumno del Máster en IA y Big Data.",
     },
     phase: CAMERA_PHASES.hero,
   },
@@ -43,7 +43,7 @@ const BLOCKS: Record<
       label: "SOBRE MÍ",
       title: "Quién soy",
       body:
-        "Estudio desarrollo de software y llevo tiempo construyendo proyectos que combinan backend robusto, hardware físico e inteligencia artificial. Me interesa la parte que no se ve: la lógica, los datos y los sistemas que hacen que todo funcione. Actualmente ampliando mi stack con React y profundizando en arquitecturas de agentes de IA.",
+        "Terminé el ciclo de DAM en junio de 2026 y curso el Máster en IA y Big Data. Hice prácticas en Catuven Innovation con Odoo y automatización en Python. Me interesa la parte que no se ve: la lógica, los datos y los sistemas que hacen que todo funcione, y lo practico con proyectos propios de backend, IA y hardware.",
       side: "left",
     },
     phase: CAMERA_PHASES["sobre-mi"],
@@ -51,10 +51,10 @@ const BLOCKS: Record<
   backend: {
     content: {
       label: "01 — BACKEND",
-      title: "Arquitectura y Microservicios",
-      body: "Desarrollo de CRM con Java, Spring Boot, Spring Security (JWT) y bases de datos relacionales en PostgreSQL.",
+      title: "Backend con Java y Spring Boot",
+      body: "API REST con Spring Boot, Spring Security (JWT) y MySQL en un CRM empresarial desarrollado en equipo, donde mi trabajo se centró en el backend.",
       side: "right",
-      tags: ["Java", "Spring Boot", "JWT", "PostgreSQL"],
+      tags: ["Java", "Spring Boot", "JWT", "MySQL"],
     },
     phase: CAMERA_PHASES.backend,
   },
@@ -62,7 +62,7 @@ const BLOCKS: Record<
     content: {
       label: "02 — FRONTEND",
       title: "Ecosistema UI",
-      body: "Construcción de interfaces reactivas con Angular usando Signals, React y Tailwind CSS.",
+      body: "Interfaces con Angular, React y Tailwind CSS. Este portfolio es una app Next.js con React Three Fiber.",
       side: "left",
       tags: ["Angular", "React", "Tailwind CSS"],
     },
@@ -71,18 +71,18 @@ const BLOCKS: Record<
   ia: {
     content: {
       label: "03 — INTELIGENCIA ARTIFICIAL",
-      title: "Agentes e Inteligencia Aplicada",
-      body: "Desarrollo de agentes de IA autónomos con memoria RAG (TCG Agent) y APIs de análisis inteligente con Google Gemini (CV Analyzer API), construidos en Python con FastAPI y bases de datos vectoriales.",
+      title: "Agentes e IA aplicada",
+      body: "Un agente de IA con herramientas externas y memoria RAG, y una API de análisis de CVs con Gemini, probada y desplegada (CV Analyzer API). Python y FastAPI en ambos.",
       side: "right",
-      tags: ["Python", "FastAPI", "Google Gemini", "RAG"],
+      tags: ["Python", "FastAPI", "Gemini", "RAG"],
     },
     phase: CAMERA_PHASES.ia,
   },
   explode: {
     content: {
       label: "04 — HARDWARE",
-      title: "Ingeniería Inteligente",
-      body: "Top 4 Nacional Eco-Digithon. Integración de microcontroladores Arduino, sensores telemétricos, MQTT y Node.js.",
+      title: "IoT con Arduino",
+      body: "Seleccionado entre el alumnado de DAM, DAW y ASIR del Instituto Nebrija para Green Campus, un proyecto de equipo que quedó 4.º en una competición nacional. Mi parte: el código Arduino del sistema. Stack: Arduino, sensores, MQTT y Node.js.",
       side: "left",
       tags: ["Arduino", "MQTT", "Node.js", "IoT"],
     },
@@ -173,7 +173,10 @@ const BLOCK_CONTAINER_STYLE: React.CSSProperties = {
 };
 
 const WRAPPER_STYLE: React.CSSProperties = {
-  maxWidth: 540, textShadow: "0 1px 8px rgba(0,0,0,0.6)",
+  maxWidth: 540,
+  // Sombra doble: el texto cae a veces sobre zonas claras del coche o del
+  // fondo gris de la última fase.
+  textShadow: "0 0 12px rgba(5,5,5,0.9), 0 1px 3px rgba(5,5,5,0.95)",
 };
 
 const LABEL_STYLE: React.CSSProperties = {
@@ -198,14 +201,14 @@ const TITLE_STYLE: React.CSSProperties = {
 const BODY_STYLE: React.CSSProperties = {
   margin: 0, marginTop: "0.75rem", fontFamily: "system-ui", fontWeight: 400,
   fontSize: "clamp(1rem, 1.3vw, 1.15rem)",
-  color: "rgba(245, 245, 245, 0.75)", lineHeight: 1.6, maxWidth: "32ch",
+  color: "rgba(245, 245, 245, 0.9)", lineHeight: 1.6, maxWidth: "36ch",
   opacity: 0,
 };
 
 const TAGLINE_STYLE: React.CSSProperties = {
   margin: 0, marginTop: "0.6rem", fontFamily: "system-ui", fontWeight: 400,
   fontSize: "clamp(0.95rem, 1.2vw, 1.05rem)",
-  color: "rgba(245, 245, 245, 0.65)", lineHeight: 1.5, maxWidth: "40ch",
+  color: "rgba(245, 245, 245, 0.8)", lineHeight: 1.5, maxWidth: "36ch",
   opacity: 0,
 };
 
@@ -215,36 +218,11 @@ const TAGS_ROW_STYLE: React.CSSProperties = {
 
 const TAG_STYLE: React.CSSProperties = {
   fontFamily: "var(--font-jetbrains-mono), monospace",
-  border: "1px solid rgba(255, 59, 48, 0.6)", color: "rgba(255, 59, 48, 0.6)",
+  border: "1px solid rgba(255, 59, 48, 0.6)", color: "#ff3b30",
   fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.05em",
   textTransform: "uppercase", padding: "4px 10px", borderRadius: 2,
   opacity: 0, pointerEvents: "none",
-};
-
-// ---- Indicador "Disponible" persistente ----
-const AVAIL_INDICATOR_STYLE: React.CSSProperties = {
-  position: "fixed", zIndex: 11,
-  display: "flex", alignItems: "center", gap: 8,
-  opacity: 0.5, transition: "opacity 0.2s",
-  pointerEvents: "auto",
-  // Sprint 12E: safe-area para que no quede bajo el notch / Dynamic
-  // Island en móviles con pantalla recortada.
-  top: "max(20px, env(safe-area-inset-top))",
-  right: "max(24px, env(safe-area-inset-right))",
-  // Área de toque ~44px sin desplazar el contenido visual (el padding
-  // crece la zona táctil y el margin negativo la compensa).
-  padding: "17px 0",
-  margin: "-17px 0",
-};
-
-const AVAIL_DOT_STYLE: React.CSSProperties = {
-  width: 7, height: 7, borderRadius: "50%", background: "#4ade80",
-  boxShadow: "0 0 6px rgba(74, 222, 128, 0.5)",
-};
-
-const AVAIL_TEXT_STYLE: React.CSSProperties = {
-  fontFamily: "system-ui", fontSize: "0.65rem", fontWeight: 500,
-  letterSpacing: "0.1em", textTransform: "uppercase", color: "#f5f5f5",
+  background: "rgba(5, 5, 5, 0.7)",
 };
 
 // ---------------------------------------------------------------------------
@@ -268,7 +246,7 @@ export default function ContentOverlay() {
   };
 
   // Indicador de disponibilidad
-  const availRef = useRef<HTMLDivElement>(null);
+  const availRef = useRef<HTMLElement>(null);
 
   // Wrapper para el fade al salir del recorrido 3D (Sprint 8)
   const blocksWrapperRef = useRef<HTMLDivElement>(null);
@@ -332,16 +310,16 @@ export default function ContentOverlay() {
   // ------------------------------------------------------------------
   return (
     <div className="canvas-height" style={OVERLAY_STYLE}>
-      {/* Indicador "Disponible" persistente (esquina superior derecha) */}
-      <div
-        ref={availRef}
-        style={AVAIL_INDICATOR_STYLE}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "1"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "0.5"; }}
-      >
-        <span style={AVAIL_DOT_STYLE} />
-        <span style={AVAIL_TEXT_STYLE}>Disponible</span>
-      </div>
+      {/* Barra superior: estado + accesos rápidos (estilos en globals.css) */}
+      <nav ref={availRef} className="top-bar" aria-label="Accesos rápidos">
+        <span className="status">
+          <i aria-hidden="true" />
+          <span>Disponible</span>
+        </span>
+        <a href="#proyectos">Proyectos</a>
+        <a href="/cv.pdf" target="_blank" rel="noopener noreferrer">CV</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
 
       {/* Bloques de fase (wrapper para fade al salir del track 3D) */}
       <div ref={blocksWrapperRef} style={BLOCKS_WRAPPER_STYLE}>
@@ -372,7 +350,11 @@ export default function ContentOverlay() {
                   }}
                 />
 
-                <h2 data-el="title" style={TITLE_STYLE}>{content.title}</h2>
+                {key === "hero" ? (
+                  <h1 data-el="title" style={TITLE_STYLE}>{content.title}</h1>
+                ) : (
+                  <h2 data-el="title" style={TITLE_STYLE}>{content.title}</h2>
+                )}
                 <p data-el="body" style={BODY_STYLE}>{content.body}</p>
 
                 {/* Tagline secundaria (solo hero, Sprint 9A) */}

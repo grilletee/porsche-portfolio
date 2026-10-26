@@ -60,21 +60,22 @@ const FOOTER_NOTE_STYLE: React.CSSProperties = {
   fontSize: "0.65rem",
   letterSpacing: "0.1em",
   textTransform: "uppercase",
-  color: "rgba(245, 245, 245, 0.4)",
+  color: "rgba(245, 245, 245, 0.65)",
   marginTop: 48,
 };
 
 export default function Footer() {
   return (
-    <footer style={FOOTER_STYLE}>
+    <footer id="contacto" style={FOOTER_STYLE}>
       <Reveal>
         <div style={CTA_BLOCK_STYLE}>
-          <h2 style={TITLE_STYLE}>¿Hablamos?</h2>
+          <h2 style={TITLE_STYLE}>Contacto</h2>
           <p style={BODY_STYLE}>
-            Trabajando en backend, IoT e IA aplicada — escríbeme.
+            Busco incorporarme a un equipo de desarrollo, sobre todo en backend, IA aplicada o IoT. Escríbeme o echa un vistazo a mi CV.
           </p>
-          <div>
-            <TechButton href="mailto:grillete07@gmail.com">Contrátame</TechButton>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+            <TechButton href="mailto:grillete07@gmail.com">grillete07@gmail.com</TechButton>
+            <TechButton href="/cv.pdf">Ver CV (PDF)</TechButton>
           </div>
         </div>
       </Reveal>
@@ -100,15 +101,6 @@ export default function Footer() {
             onMouseLeave={(e) => (e.currentTarget.style.color = "#f5f5f5")}
           >
             GitHub
-          </a>
-          <a
-            href="/cv.pdf"
-            download
-            style={LINK_STYLE}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#ff3b30")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#f5f5f5")}
-          >
-            Descargar CV
           </a>
         </div>
         <p style={FOOTER_NOTE_STYLE}>Guillermo Sánchez Gutiérrez — 2026</p>

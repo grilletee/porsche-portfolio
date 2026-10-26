@@ -20,13 +20,15 @@ export default function TechButton({
   download,
 }: TechButtonProps) {
   const [hovered, setHovered] = useState(false);
+  // Solo los enlaces http(s) externos abren pestaña nueva (no mailto ni /cv.pdf).
+  const external = /^https?:/.test(href);
 
   return (
     <a
       href={href}
       download={download}
-      target={download ? undefined : "_blank"}
-      rel={download ? undefined : "noopener noreferrer"}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
       style={{
         ...OUTLINE_BUTTON_STYLE,
         background: hovered ? "rgba(255, 59, 48, 0.12)" : "transparent",

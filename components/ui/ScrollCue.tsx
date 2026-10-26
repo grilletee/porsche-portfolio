@@ -54,7 +54,7 @@ export default function ScrollCue() {
   return (
     <div ref={cueRef} style={CUE_STYLE} aria-hidden="true">
       <span style={LABEL_STYLE}>SCROLL</span>
-      <span style={LINE_STYLE} />
+      <span className="scroll-cue-line" style={LINE_STYLE} />
     </div>
   );
 }

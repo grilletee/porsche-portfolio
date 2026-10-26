@@ -45,7 +45,8 @@ export const BODY_STYLE: CSSProperties = {
 export const TAG_STYLE: CSSProperties = {
   fontFamily: "var(--font-jetbrains-mono), monospace",
   border: "1px solid rgba(255, 59, 48, 0.6)",
-  color: "rgba(255, 59, 48, 0.6)",
+  // Texto en rojo pleno (contraste AA sobre #050505); el borde sigue suave.
+  color: "#ff3b30",
   fontSize: "0.7rem",
   fontWeight: 500,
   letterSpacing: "0.05em",
